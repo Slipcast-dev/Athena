@@ -32,6 +32,8 @@ public protocol AIProfileManaging: Sendable {
 }
 
 public protocol AgentBridging: Sendable {
+    func availableCommands() async -> [AgentCommand]
+    func execute(command: AgentCommandRequest) async throws -> AgentCommandResult
     func activeTasks() async -> [AgentTask]
     func cancelTask(id: UUID) async
 }

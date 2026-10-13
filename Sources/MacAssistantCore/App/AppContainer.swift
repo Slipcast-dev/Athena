@@ -59,7 +59,11 @@ public struct ServiceDependencies: Sendable {
             storage: StorageAnalysisService(),
             ai: NetworkAIProvider(manager: providerManager),
             aiProfiles: providerManager,
-            agentBridge: UnavailableAgentBridge()
+            agentBridge: LocalAgentBridge(
+                systemInformation: systemInformation,
+                diagnostics: SystemDiagnosticsService(systemInformation: systemInformation),
+                storage: StorageAnalysisService()
+            )
         )
     }()
 }
@@ -90,6 +94,10 @@ private struct UnavailableAIProfileManager: AIProfileManaging {
 }
 
 private actor UnavailableAgentBridge: AgentBridging {
+    func availableCommands() async -> [AgentCommand] { [] }
+    func execute(command _: AgentCommandRequest) async throws -> AgentCommandResult {
+        throw ServiceError.unavailable(feature: "Agent Bridge")
+    }
     func activeTasks() async -> [AgentTask] { [] }
     func cancelTask(id _: UUID) async {}
 }
