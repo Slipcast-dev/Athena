@@ -10,10 +10,10 @@ public final class AppContainer {
         self.services = services
     }
 
-    /// Базовая конфигурация до реализации рабочих сервисов. Явно возвращаемая
-    /// ошибка безопаснее фиктивных диагностических данных.
+    /// Базовая конфигурация использует только локальные системные API. Сетевые,
+    /// файловые и агентные сервисы остаются явно недоступными до своих блоков.
     public static func makeDefault() -> AppContainer {
-        AppContainer(services: .unavailable)
+        AppContainer(services: .live)
     }
 }
 
@@ -45,6 +45,17 @@ public struct ServiceDependencies: Sendable {
         ai: UnavailableAIService(),
         agentBridge: UnavailableAgentBridge()
     )
+
+    public static let live: ServiceDependencies = {
+        let systemInformation = SystemInformationService()
+        return ServiceDependencies(
+            systemInformation: systemInformation,
+            diagnostics: SystemDiagnosticsService(systemInformation: systemInformation),
+            storage: UnavailableStorageService(),
+            ai: UnavailableAIService(),
+            agentBridge: UnavailableAgentBridge()
+        )
+    }()
 }
 
 private struct UnavailableSystemService: SystemInformationProviding {

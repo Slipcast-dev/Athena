@@ -2,10 +2,11 @@ import XCTest
 @testable import MacAssistantCore
 
 final class ArchitectureTests: XCTestCase {
-    /// Контейнер не должен подменять отсутствие реализации фиктивными метриками.
+    /// Явно переданные заглушки не должны подменять отсутствие реализации
+    /// фиктивными метриками. Контейнер по умолчанию теперь использует локальный сервис.
     @MainActor
-    func testDefaultContainerReportsUnavailableSystemInformation() async {
-        let container = AppContainer.makeDefault()
+    func testUnavailableDependenciesReportUnavailableSystemInformation() async {
+        let container = AppContainer(services: .unavailable)
 
         do {
             _ = try await container.services.systemInformation.systemInfo()

@@ -43,6 +43,14 @@ public struct SystemMetrics: Codable, Equatable, Sendable {
             : 0
         return (Double(used) / Double(totalStorageBytes)) * 100
     }
+
+    /// Высокое использование памяти само по себе не является неисправностью:
+    /// macOS использует свободную RAM как кэш. Поэтому это только показатель,
+    /// а предупреждения создаются лишь при наличии надёжного сигнала давления.
+    public var memoryUsagePercent: Double? {
+        guard totalMemoryBytes > 0 else { return nil }
+        return (Double(usedMemoryBytes) / Double(totalMemoryBytes)) * 100
+    }
 }
 
 public enum MemoryPressure: String, Codable, CaseIterable, Sendable {
