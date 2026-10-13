@@ -17,6 +17,8 @@
   Codex или DeepSeek Harness.
 - Отключение Mac Assistant MCP из Codex и DeepSeek Harness без изменения других
   MCP-серверов пользователя.
+- Предварительный GitHub Release `v0.1.0-unsigned` с тестовым `.pkg`-
+  установщиком без подписи Apple Developer ID и без notarization.
 
 ### Изменено
 
