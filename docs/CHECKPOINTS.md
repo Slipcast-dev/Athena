@@ -176,3 +176,21 @@
   Developer ID и notarization.
 - **Коммит:** `feat(agent): add automatic MCP setup and GitHub CI`.
 - **Тег:** `CP-12-AUTOMATIC-MCP-AND-GITHUB`.
+
+## CP-13-REPOSITORY-CLEANUP
+
+- **Дата:** 13 октября 2026
+- **Статус:** завершён (локальная подготовка)
+- **Содержание:** удалена устаревшая пустая структура `Views/`; расширен
+  `.gitignore` для локальных сборок, IDE-настроек и `.env`; добавлена политика
+  `SECURITY.md`; актуализированы README, инструкция MCP, статус проекта,
+  релизная и GitHub-документация.
+- **Installer:** пересобран `MacAssistant-0.1.0-unsigned.pkg`; наличие
+  `MacAssistantMCP` в payload подтверждено, совпадающая копия обновлена на
+  рабочем столе.
+- **Проверки:** `swift test` — 26 тестов пройдены; `swift build -c release` и
+  `./script/build_and_run.sh --package` — успешно; `codesign --verify --deep
+  --strict` для локального `.app` — успешно.
+- **Ограничения:** пакет unsigned. В текущей sandbox-среде `pkgbuild` может
+  сериализовать системный provenance как AppleDouble-файлы; публичный installer
+  необходимо пересобрать с Developer ID и проверить на чистом Mac.

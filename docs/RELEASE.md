@@ -6,6 +6,9 @@
 `dist/MacAssistant.app`, проверяет синтаксис `Info.plist` и целостность ad-hoc
 подписи через `codesign --verify --deep --strict`.
 
+Перед передачей артефакта для локального тестирования также выполняйте
+`swift test` и `./script/build_and_run.sh --verify`.
+
 `./script/build_and_run.sh --installer` дополнительно создаёт
 `dist/MacAssistant-0.1.0-unsigned.pkg`. Он устанавливает `MacAssistant.app` в
 `/Applications` и содержит MCP-исполнитель внутри bundle. Пакет unsigned и
@@ -25,3 +28,16 @@
 
 Ad-hoc подпись в сценарии предназначена только для локальной технической
 проверки и не заменяет ни один из этих шагов.
+
+На текущей macOS-среде sandbox системный атрибут `com.apple.provenance` может
+попасть в unsigned payload как служебные `._*` AppleDouble-файлы. Это не часть
+кода приложения и не содержит данных пользователя, но публичный installer всё
+равно нужно собирать и проверять повторно на подписывающей машине с Developer ID.
+
+## Готовность к GitHub
+
+Исходники, тесты, CI, шаблон сообщения об ошибке и инструкция первого push уже
+находятся в репозитории. Для публикации исходного кода достаточно создать
+пустой GitHub-репозиторий и выполнить шаги из
+[GITHUB_PUBLICATION.md](GITHUB_PUBLICATION.md). Не прикрепляйте unsigned `.pkg`
+к публичному GitHub Release.

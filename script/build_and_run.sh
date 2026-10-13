@@ -117,10 +117,11 @@ make_installer() {
   # Не переносим resource forks и расширенные атрибуты в payload. Иначе APFS
   # может создать `._`-файлы, которые бесполезны для приложения и засоряют PKG.
   /usr/bin/ditto --norsrc --noextattr --noqtn --noacl "$APP_BUNDLE" "$PAYLOAD_ROOT/Applications/$APP_NAME.app"
-  # macOS автоматически добавляет `com.apple.provenance` при локальном
-  # копировании в этой среде. Удаляем его только с временной копии payload,
-  # иначе pkgbuild сериализует метаданные как AppleDouble-файлы `._*`.
-  /usr/bin/xattr -cr "$PAYLOAD_ROOT/Applications/$APP_NAME.app"
+  # AppleDouble-файлы не входят в состав приложения. Удаляем те, которые могли
+  # попасть во временный payload при копировании. Современный macOS может
+  # дополнительно сериализовать provenance в unsigned-пакет; это проверяется
+  # отдельно перед публичным выпуском с Developer ID.
+  /usr/bin/find "$PAYLOAD_ROOT" -type f -name '._*' -delete
   rm -f "$INSTALLER_PATH"
   /usr/bin/pkgbuild --root "$PAYLOAD_ROOT" --identifier "$BUNDLE_ID" --version "$APP_VERSION" --install-location / "$INSTALLER_PATH"
   # Для локального unsigned-пакета `pkgutil` намеренно завершает проверку
