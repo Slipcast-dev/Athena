@@ -36,6 +36,7 @@ cd "$ROOT_DIR"
 swift build -c "$BUILD_CONFIGURATION"
 BUILD_BINARY="$(swift build -c "$BUILD_CONFIGURATION" --show-bin-path)/$APP_NAME"
 BUILD_MCP_BINARY="$(swift build -c "$BUILD_CONFIGURATION" --show-bin-path)/MacAssistantMCP"
+BUILD_PRODUCTS_DIR="$(dirname "$BUILD_BINARY")"
 
 rm -rf "$APP_BUNDLE"
 mkdir -p "$APP_MACOS"
@@ -44,6 +45,15 @@ cp "$BUILD_BINARY" "$APP_BINARY"
 cp "$BUILD_MCP_BINARY" "$MCP_BINARY"
 chmod +x "$APP_BINARY"
 chmod +x "$MCP_BINARY"
+
+# SwiftPM обрабатывает ресурсы исполняемого target в отдельный bundle рядом с
+# бинарником. `Bundle.module` в SwiftUI ищет именно его: без копирования
+# приложение аварийно завершается при первом обращении к ресурсам (например,
+# к изображению Афины в боковой панели). Переносим все bundles целиком, чтобы
+# упаковщик оставался корректным и после добавления новых локальных ресурсов.
+while IFS= read -r -d '' resource_bundle; do
+  /usr/bin/ditto --norsrc --noextattr "$resource_bundle" "$APP_CONTENTS/Resources/$(basename "$resource_bundle")"
+done < <(/usr/bin/find "$BUILD_PRODUCTS_DIR" -maxdepth 1 -type d -name '*.bundle' -print0)
 
 if [[ ! -f "$ICON_SOURCE" ]]; then
   echo "Не найден исходный файл иконки: $ICON_SOURCE" >&2
