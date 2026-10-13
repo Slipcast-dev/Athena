@@ -4,6 +4,7 @@ import MacAssistantCore
 struct AgentsView: View {
     @StateObject private var viewModel: AgentsViewModel
     @State private var connectionTarget: MCPClient?
+    @State private var disconnectionTarget: MCPClient?
 
     init(container: AppContainer) {
         _viewModel = StateObject(wrappedValue: AgentsViewModel(
@@ -22,18 +23,16 @@ struct AgentsView: View {
                         .foregroundStyle(.secondary)
 
                     ForEach(MCPClient.allCases) { client in
+                        let status = viewModel.status(for: client)
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(client.title)
-                                Text(viewModel.status(for: client).title)
+                                Text(status.title)
                                     .font(.caption)
-                                    .foregroundStyle(statusColor(for: viewModel.status(for: client)))
+                                    .foregroundStyle(statusColor(for: status))
                             }
                             Spacer()
-                            Button("Подключить") {
-                                connectionTarget = client
-                            }
-                            .disabled(viewModel.isConnecting || viewModel.status(for: client) == .configured)
+                            connectionControl(for: client, status: status)
                         }
                     }
                 }
@@ -71,6 +70,23 @@ struct AgentsView: View {
             } message: {
                 Text("Приложение зарегистрирует только собственный MCP-исполнитель Mac Assistant. Другие настройки клиента не будут изменены.")
             }
+            .confirmationDialog(
+                "Отключить MCP-мост?",
+                isPresented: Binding(get: { disconnectionTarget != nil }, set: { if !$0 { disconnectionTarget = nil } }),
+                titleVisibility: .visible
+            ) {
+                if let target = disconnectionTarget {
+                    Button("Отключить от \(target.title)", role: .destructive) {
+                        Task {
+                            await viewModel.disconnect(target)
+                            disconnectionTarget = nil
+                        }
+                    }
+                }
+                Button("Отмена", role: .cancel) { disconnectionTarget = nil }
+            } message: {
+                Text("Будет удалена только запись MCP-сервера Mac Assistant. Остальные MCP-серверы и настройки клиента сохранятся.")
+            }
             .alert("Не удалось подключить MCP", isPresented: Binding(get: { viewModel.error != nil }, set: { if !$0 { viewModel.error = nil } })) {
                 Button("OK", role: .cancel) {}
             } message: {
@@ -84,6 +100,24 @@ struct AgentsView: View {
         case .configured: .green
         case .notConfigured: .secondary
         case .unavailable: .red
+        }
+    }
+
+    /// Кнопка вынесена из большого `ForEach`, чтобы SwiftUI не строил один
+    /// чрезмерно сложный вывод типов для условных состояний подключения.
+    @ViewBuilder
+    private func connectionControl(for client: MCPClient, status: MCPConnectionStatus) -> some View {
+        switch status {
+        case .configured:
+            Button("Отключить", role: .destructive) {
+                disconnectionTarget = client
+            }
+            .disabled(viewModel.isUpdatingConnection)
+        case .notConfigured, .unavailable:
+            Button("Подключить") {
+                connectionTarget = client
+            }
+            .disabled(viewModel.isUpdatingConnection)
         }
     }
 }

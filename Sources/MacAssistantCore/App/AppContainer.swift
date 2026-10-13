@@ -110,4 +110,5 @@ private actor UnavailableAgentBridge: AgentBridging {
 private struct UnavailableMCPConnectionService: MCPConnectionManaging {
     func status(for _: MCPClient) async -> MCPConnectionStatus { .unavailable(reason: "Подключение MCP недоступно.") }
     func connect(_: MCPClient) async throws -> MCPConnectionStatus { throw ServiceError.unavailable(feature: "Подключение MCP") }
+    func disconnect(_: MCPClient) async throws -> MCPConnectionStatus { throw ServiceError.unavailable(feature: "Подключение MCP") }
 }

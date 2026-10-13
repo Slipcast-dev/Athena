@@ -28,4 +28,32 @@ final class MCPConnectionServiceTests: XCTestCase {
         let finalStatus = await service.status(for: .deepSeekHarness)
         XCTAssertEqual(finalStatus, .configured)
     }
+
+    func testHarnessDisconnectionRemovesOnlyMacAssistantEntry() async throws {
+        let home = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: home, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: home) }
+        let service = MCPConnectionService(
+            homeDirectory: home,
+            executableLocator: { URL(fileURLWithPath: "/bin/echo") }
+        )
+        let patchURL = home.appendingPathComponent(".dsh/cordis.patch.yml")
+        try FileManager.default.createDirectory(at: patchURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+        let unrelatedPatch = """
+        - insert:
+            - id: another-local-server
+              name: '@example/mcp-client'
+        """
+        try unrelatedPatch.write(to: patchURL, atomically: true, encoding: .utf8)
+
+        _ = try await service.connect(.deepSeekHarness)
+        let result = try await service.disconnect(.deepSeekHarness)
+
+        XCTAssertEqual(result, .notConfigured)
+        let finalStatus = await service.status(for: .deepSeekHarness)
+        XCTAssertEqual(finalStatus, .notConfigured)
+        let retainedPatch = try String(contentsOf: patchURL, encoding: .utf8)
+        XCTAssertTrue(retainedPatch.contains("id: another-local-server"))
+        XCTAssertFalse(retainedPatch.contains("id: mcp-mac-assistant"))
+    }
 }

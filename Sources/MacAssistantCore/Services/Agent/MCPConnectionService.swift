@@ -50,6 +50,19 @@ public actor MCPConnectionService: MCPConnectionManaging {
         }
     }
 
+    public func disconnect(_ client: MCPClient) async throws -> MCPConnectionStatus {
+        switch client {
+        case .codex:
+            // Удаляется только сервер с нашим фиксированным именем. Команда не
+            // получает ни путь, ни параметры от UI или внешнего агента.
+            _ = try runCodex(arguments: ["mcp", "remove", "mac-assistant"])
+            UserDefaults.standard.set(false, forKey: "mcp.codex.configured")
+        case .deepSeekHarness:
+            try disconnectHarness()
+        }
+        return .notConfigured
+    }
+
     private var harnessPatchURL: URL {
         homeDirectory.appendingPathComponent(".dsh/cordis.patch.yml", isDirectory: false)
     }
@@ -80,6 +93,30 @@ public actor MCPConnectionService: MCPConnectionManaging {
         """
         let separator = existing.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "" : "\n"
         try (existing + separator + patch + "\n").write(to: patchURL, atomically: true, encoding: .utf8)
+    }
+
+    private func disconnectHarness() throws {
+        let patchURL = harnessPatchURL
+        guard let existing = try? String(contentsOf: patchURL, encoding: .utf8) else { return }
+        let marker = "- insert:\n    - id: mcp-mac-assistant"
+        guard let start = existing.range(of: marker) else { return }
+
+        // Одна операция `insert` в cordis.patch.yml начинается с `-` в первом
+        // столбце. Поэтому граница следующей такой операции позволяет удалить
+        // только блок, который создаёт Mac Assistant, не затрагивая остальные
+        // записи пользователя в том же файле.
+        let followingRange = existing.range(of: "\n- ", range: start.upperBound..<existing.endIndex)
+        let end = followingRange?.lowerBound ?? existing.endIndex
+        var updated = String(existing[..<start.lowerBound]) + String(existing[end...])
+        updated = updated.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if updated.isEmpty {
+            // Файл был создан только для Mac Assistant, поэтому его безопасно
+            // убрать целиком. Это возвращает Harness в исходное состояние.
+            try fileManager.removeItem(at: patchURL)
+        } else {
+            try (updated + "\n").write(to: patchURL, atomically: true, encoding: .utf8)
+        }
     }
 
     private func runCodex(arguments: [String]) throws -> String {
