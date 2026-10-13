@@ -138,3 +138,22 @@
   notarization и внешний выпуск.
 - **Коммит:** `docs(release): prepare local distribution workflow`.
 - **Тег:** `CP-10-RELEASE`.
+
+## CP-11-AGENT-CONTROL-INSTALLER-THEME
+
+- **Дата:** 13 октября 2026
+- **Статус:** завершён (локальная интеграция)
+- **Содержание:** добавлены системный, светлый и тёмный режимы темы; MCP-
+  исполнитель включён в bundle; добавлены сценарии регистрации в Codex и вывода
+  конфигурации DeepSeek Harness; создан unsigned `.pkg`-установщик.
+- **Проверки:** `swift test` — 24 теста пройдены; `swift build` — успешно;
+  `--installer` сформировал пакет, а `pkgutil --payload-files` подтвердил
+  наличие основного приложения и `MacAssistantMCP`.
+- **Безопасность:** сценарий не регистрирует MCP глобально без явного запуска
+  пользователем и не редактирует `~/.dsh`; доступные агенту команды остаются
+  только для чтения.
+- **Ограничения:** `pkgbuild` в sandbox добавляет служебные AppleDouble-записи
+  provenance в payload. Перед внешним выпуском нужна проверка на обычной macOS
+  с Developer ID и notarization.
+- **Коммит:** `feat(app): add themes MCP setup and installer`.
+- **Тег:** `CP-11-AGENT-CONTROL-INSTALLER-THEME`.

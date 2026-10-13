@@ -7,6 +7,7 @@ MODE="${1:-run}"
 APP_NAME="MacAssistant"
 BUNDLE_ID="com.macassistant.app"
 MIN_SYSTEM_VERSION="14.0"
+APP_VERSION="0.1.0"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DIST_DIR="$ROOT_DIR/dist"
@@ -14,30 +15,35 @@ APP_BUNDLE="$DIST_DIR/$APP_NAME.app"
 APP_CONTENTS="$APP_BUNDLE/Contents"
 APP_MACOS="$APP_CONTENTS/MacOS"
 APP_BINARY="$APP_MACOS/$APP_NAME"
+MCP_BINARY="$APP_MACOS/MacAssistantMCP"
 INFO_PLIST="$APP_CONTENTS/Info.plist"
 ICON_SOURCE="$ROOT_DIR/Sources/MacAssistant/Resources/AgentAthena.png"
 ICON_FILE="$APP_CONTENTS/Resources/$APP_NAME.icns"
+INSTALLER_PATH="$DIST_DIR/$APP_NAME-$APP_VERSION-unsigned.pkg"
 
 BUILD_CONFIGURATION="debug"
-if [[ "$MODE" == "--package" || "$MODE" == "package" ]]; then
+if [[ "$MODE" == "--package" || "$MODE" == "package" || "$MODE" == "--installer" || "$MODE" == "installer" ]]; then
   # Релизный бинарник нужен для передачи на ручную подпись; запускать его
   # автоматически не следует, поскольку это операция подготовки артефакта.
   BUILD_CONFIGURATION="release"
 fi
 
-if [[ "$MODE" != "--package" && "$MODE" != "package" ]]; then
+if [[ "$MODE" != "--package" && "$MODE" != "package" && "$MODE" != "--installer" && "$MODE" != "installer" ]]; then
   pkill -x "$APP_NAME" >/dev/null 2>&1 || true
 fi
 
 cd "$ROOT_DIR"
 swift build -c "$BUILD_CONFIGURATION"
 BUILD_BINARY="$(swift build -c "$BUILD_CONFIGURATION" --show-bin-path)/$APP_NAME"
+BUILD_MCP_BINARY="$(swift build -c "$BUILD_CONFIGURATION" --show-bin-path)/MacAssistantMCP"
 
 rm -rf "$APP_BUNDLE"
 mkdir -p "$APP_MACOS"
 mkdir -p "$APP_CONTENTS/Resources"
 cp "$BUILD_BINARY" "$APP_BINARY"
+cp "$BUILD_MCP_BINARY" "$MCP_BINARY"
 chmod +x "$APP_BINARY"
+chmod +x "$MCP_BINARY"
 
 if [[ ! -f "$ICON_SOURCE" ]]; then
   echo "Не найден исходный файл иконки: $ICON_SOURCE" >&2
@@ -69,6 +75,10 @@ cat >"$INFO_PLIST" <<PLIST
   <string>$BUNDLE_ID</string>
   <key>CFBundleName</key>
   <string>$APP_NAME</string>
+  <key>CFBundleShortVersionString</key>
+  <string>$APP_VERSION</string>
+  <key>CFBundleVersion</key>
+  <string>$APP_VERSION</string>
   <key>CFBundleIconFile</key>
   <string>$APP_NAME</string>
   <key>CFBundlePackageType</key>
@@ -87,6 +97,31 @@ PLIST
 
 open_app() { /usr/bin/open -n "$APP_BUNDLE"; }
 
+make_installer() {
+  # Пакет содержит приложение и MCP-исполнитель в одном bundle. Он не пытается
+  # установить себя: запись в /Applications требует отдельного решения пользователя.
+  PAYLOAD_PARENT="$(mktemp -d)"
+  PAYLOAD_ROOT="$PAYLOAD_PARENT/root"
+  trap 'rm -rf "$ICONSET_PARENT" "$PAYLOAD_PARENT"' EXIT
+  mkdir -p "$PAYLOAD_ROOT/Applications"
+  # Не переносим resource forks и расширенные атрибуты в payload. Иначе APFS
+  # может создать `._`-файлы, которые бесполезны для приложения и засоряют PKG.
+  /usr/bin/ditto --norsrc --noextattr --noqtn --noacl "$APP_BUNDLE" "$PAYLOAD_ROOT/Applications/$APP_NAME.app"
+  # macOS автоматически добавляет `com.apple.provenance` при локальном
+  # копировании в этой среде. Удаляем его только с временной копии payload,
+  # иначе pkgbuild сериализует метаданные как AppleDouble-файлы `._*`.
+  /usr/bin/xattr -cr "$PAYLOAD_ROOT/Applications/$APP_NAME.app"
+  rm -f "$INSTALLER_PATH"
+  /usr/bin/pkgbuild --root "$PAYLOAD_ROOT" --identifier "$BUNDLE_ID" --version "$APP_VERSION" --install-location / "$INSTALLER_PATH"
+  # Для локального unsigned-пакета `pkgutil` намеренно завершает проверку
+  # ненулевым статусом с «Status: no signature». Это предупреждение, а не
+  # ошибка сборки: публичная подпись добавляется только владельцем Developer ID.
+  if ! /usr/sbin/pkgutil --check-signature "$INSTALLER_PATH"; then
+    echo "Установщик не подписан Developer ID; это ожидаемо для локальной сборки." >&2
+  fi
+  echo "Локальный установщик: $INSTALLER_PATH"
+}
+
 case "$MODE" in
   run) open_app ;;
   --debug|debug) lldb -- "$APP_BINARY" ;;
@@ -94,5 +129,6 @@ case "$MODE" in
   --telemetry|telemetry) open_app; /usr/bin/log stream --info --style compact --predicate "subsystem == \"$BUNDLE_ID\"" ;;
   --verify|verify) open_app; sleep 1; pgrep -x "$APP_NAME" >/dev/null ;;
   --package|package) /usr/bin/plutil -lint "$INFO_PLIST"; /usr/bin/codesign --verify --deep --strict "$APP_BUNDLE"; echo "Локальный релизный пакет: $APP_BUNDLE" ;;
-  *) echo "usage: $0 [run|--debug|--logs|--telemetry|--verify|--package]" >&2; exit 2 ;;
+  --installer|installer) /usr/bin/plutil -lint "$INFO_PLIST"; /usr/bin/codesign --verify --deep --strict "$APP_BUNDLE"; make_installer ;;
+  *) echo "usage: $0 [run|--debug|--logs|--telemetry|--verify|--package|--installer]" >&2; exit 2 ;;
 esac

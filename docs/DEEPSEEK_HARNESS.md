@@ -30,11 +30,39 @@ swift build
 swift run MacAssistantMCP
 ```
 
-В рабочем окружении Harness следует указать команду собранного бинарного файла
-`.build/debug/MacAssistantMCP`. При разработке вместо него допустима команда
+После установки `.pkg` MCP-исполнитель находится внутри приложения по пути
+`/Applications/MacAssistant.app/Contents/MacOS/MacAssistantMCP`. При разработке
+вместо него допустима команда
 `swift run --package-path /Users/Aleksandr/Documents/Проекты/MacAssistant MacAssistantMCP`.
 Параметр `serverName` в конфигурации Harness должен быть `mac-assistant`:
 Harness публикует его инструменты под пространством имён `mcp__mac-assistant__…`.
+
+## Подключение к Codex
+
+После установки приложения выполните из корня репозитория:
+
+```zsh
+./script/configure_mcp.sh --codex
+```
+
+Скрипт вызывает официальный `codex mcp add`, регистрирует локальный stdio-сервер
+под именем `mac-assistant` и выводит его сохранённую конфигурацию. При этом
+изменяется только одноимённая запись; остальные MCP-серверы Codex не затрагиваются.
+
+## Подключение к DeepSeek Harness
+
+Сначала выведите и проверьте конфигурацию:
+
+```zsh
+./script/configure_mcp.sh --harness-config
+```
+
+Вставьте напечатанный блок в используемый доверенный Cordis profile patch Harness
+и перезапустите Harness. Блок использует официальный пакет
+`@deepseek-ai/dsh-mcp-client`, транспорт `stdio`, namespace `mac-assistant` и
+тайм-аут вызова 60 секунд. Скрипт умышленно не записывает в `~/.dsh`: конфигурация
+MCP запускает локальную программу, поэтому пользователь должен увидеть её перед
+подключением.
 
 ## Проверка границ
 
@@ -48,3 +76,4 @@ Harness публикует его инструменты под простран
 - DeepSeek Harness: <https://www.deepseek.com/harness/en/>
 - Репозиторий Harness: <https://github.com/deepseek-ai/deepseek-harness>
 - Документация MCP-клиента Harness: <https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/mcp/mcp-client/README.md>
+- Документация Codex MCP: <https://developers.openai.com/learn/docs-mcp>

@@ -6,6 +6,11 @@
 `dist/MacAssistant.app`, проверяет синтаксис `Info.plist` и целостность ad-hoc
 подписи через `codesign --verify --deep --strict`.
 
+`./script/build_and_run.sh --installer` дополнительно создаёт
+`dist/MacAssistant-0.1.0-unsigned.pkg`. Он устанавливает `MacAssistant.app` в
+`/Applications` и содержит MCP-исполнитель внутри bundle. Пакет unsigned и
+предназначен только для локальной проверки до появления сертификата Developer ID.
+
 ## Что ещё нужно для внешнего распространения
 
 В репозитории нет Apple Developer Team ID, сертификата Developer ID Application

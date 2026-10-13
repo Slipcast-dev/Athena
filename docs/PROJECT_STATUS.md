@@ -54,6 +54,12 @@
 - Сценарий сборки дополнен командой `--package`: он собирает оптимизированный
   arm64 `.app`, проверяет `Info.plist` и создаёт ad-hoc подпись для локальной
   технической проверки.
+- Добавлены три режима оформления: системный, светлый и тёмный; выбор сохраняется
+  локально в настройках приложения.
+- MCP-исполнитель теперь входит в `.app`; подготовлены безопасные команды
+  регистрации в Codex и фрагмент конфигурации DeepSeek Harness.
+- Добавлен `--installer`, создающий локальный unsigned `.pkg` с приложением и
+  MCP-исполнителем для установки в `/Applications`.
 
 ## Невыполненные задачи
 
@@ -80,6 +86,7 @@
 | DeepSeek Harness | `swift test`: 22 теста пройдены, 0 ошибок; `swift build`: успешно; проверены ответы MCP на `initialize`, `tools/list` и отклонение `shell.execute`. |
 | Стабилизация | `swift test`: 24 теста пройдены, 0 ошибок; `swift build`: успешно; `./script/build_and_run.sh --verify`: успешно. MCP проверен на ошибочный JSON, неизвестный метод, некорректные параметры и `storage.get_overview`. |
 | Подготовка релиза | `swift test`: 24 теста пройдены, 0 ошибок; `swift build`: успешно; `./script/build_and_run.sh --verify`: успешно; `./script/build_and_run.sh --package`: создан и проверен arm64 `.app` для macOS 14 с ad-hoc подписью. |
+| MCP, тема и установщик | `swift test`: 24 теста пройдены, 0 ошибок; `swift build`: успешно; `--installer` создаёт unsigned `.pkg`, а `pkgutil --payload-files` подтверждает наличие MacAssistant.app и MacAssistantMCP. Сгенерирован и проверен фрагмент конфигурации Harness. |
 
 ## Известные риски и ограничения
 
@@ -97,3 +104,7 @@
 - Для внешнего распространения отсутствуют Developer ID Application, hardened
   runtime и notarization Apple. Локальный `dist/MacAssistant.app` не следует
   выдавать за подписанный публичный релиз.
+- В sandbox-среде `pkgbuild` сопровождает payload служебными AppleDouble-файлами
+  из системного provenance-атрибута. Они не содержат пользовательских данных и
+  не влияют на код приложения, но перед внешним выпуском packaging следует
+  повторно проверить на обычной macOS-системе с Developer ID.
