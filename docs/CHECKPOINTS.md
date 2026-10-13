@@ -194,3 +194,20 @@
 - **Ограничения:** пакет unsigned. В текущей sandbox-среде `pkgbuild` может
   сериализовать системный provenance как AppleDouble-файлы; публичный installer
   необходимо пересобрать с Developer ID и проверить на чистом Mac.
+
+## CP-14-GITHUB-PUBLICATION
+
+- **Дата:** 13 октября 2026
+- **Статус:** завершён
+- **Содержание:** создан и опубликован публичный репозиторий
+  `Slipcast-dev/MacAssistant`; отправлены ветка `main` и все контрольные теги.
+  README получил авторскую обложку цифровой Афины, современное позиционирование
+  и навигацию; добавлены `CODE_OF_CONDUCT.md`, `SECURITY.md` и шаблон pull
+  request.
+- **Оформление GitHub:** добавлены описание и темы `macos`, `swift`, `swiftui`,
+  `mcp`, `ai`, `diagnostics`, `deepseek`, `codex`, `apple-silicon`.
+- **Проверки:** перед публикацией `swift test` — 26 тестов пройдены;
+  `swift build` — успешно; проверка diff и поиск типовых секретов — успешно.
+- **Ограничения:** публичный GitHub Release и installer для внешнего
+  распространения не создавались: для них по-прежнему нужны Developer ID и
+  notarization Apple.

@@ -9,7 +9,7 @@
 | Тесты | 26 XCTest проходят успешно |
 | Локальный `.pkg` | Обновлённый unsigned-артефакт для тестирования находится на рабочем столе |
 | Подключение Codex / Harness | Подключение и отключение Mac Assistant MCP доступны в интерфейсе |
-| GitHub-исходники | Готовы к первой публикации, удалённый репозиторий не задан |
+| GitHub-исходники | Опубликованы: [Slipcast-dev/MacAssistant](https://github.com/Slipcast-dev/MacAssistant) |
 | Публичный macOS-релиз | Не готов: требуется Developer ID, hardened runtime и notarization |
 
 ## Что реализовано

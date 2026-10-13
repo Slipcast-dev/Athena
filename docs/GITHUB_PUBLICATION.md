@@ -1,6 +1,14 @@
 # Публикация на GitHub
 
-## Перед первой публикацией
+## Текущая публикация
+
+Исходный код опубликован в
+[Slipcast-dev/MacAssistant](https://github.com/Slipcast-dev/MacAssistant).
+Репозиторий публичный, его ветка по умолчанию — `main`; добавлены темы `macos`,
+`swift`, `swiftui`, `mcp`, `ai`, `diagnostics`, `deepseek`, `codex` и
+`apple-silicon`.
+
+## Для новой копии репозитория
 
 1. Создайте пустой репозиторий GitHub без автоматически сгенерированных файлов.
 2. Проверьте, что `git status` чист и `swift test` успешен.
