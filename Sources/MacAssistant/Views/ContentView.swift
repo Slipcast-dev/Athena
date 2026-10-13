@@ -40,7 +40,7 @@ private struct DetailRouter: View {
         case .aiChat:
             AIChatView()
         case .providers:
-            ProvidersView()
+            ProvidersView(container: container)
         case .agents:
             AgentsView()
         case .settings:

@@ -22,6 +22,7 @@ public struct ServiceDependencies: Sendable {
     public let diagnostics: any SystemDiagnosing
     public let storage: any StorageAnalyzing
     public let ai: any AIProviding
+    public let aiProfiles: any AIProfileManaging
     public let agentBridge: any AgentBridging
 
     public init(
@@ -29,12 +30,14 @@ public struct ServiceDependencies: Sendable {
         diagnostics: any SystemDiagnosing,
         storage: any StorageAnalyzing,
         ai: any AIProviding,
+        aiProfiles: any AIProfileManaging,
         agentBridge: any AgentBridging
     ) {
         self.systemInformation = systemInformation
         self.diagnostics = diagnostics
         self.storage = storage
         self.ai = ai
+        self.aiProfiles = aiProfiles
         self.agentBridge = agentBridge
     }
 
@@ -43,16 +46,19 @@ public struct ServiceDependencies: Sendable {
         diagnostics: UnavailableDiagnosticsService(),
         storage: UnavailableStorageService(),
         ai: UnavailableAIService(),
+        aiProfiles: UnavailableAIProfileManager(),
         agentBridge: UnavailableAgentBridge()
     )
 
     public static let live: ServiceDependencies = {
         let systemInformation = SystemInformationService()
+        let providerManager = AIProviderManager()
         return ServiceDependencies(
             systemInformation: systemInformation,
             diagnostics: SystemDiagnosticsService(systemInformation: systemInformation),
             storage: StorageAnalysisService(),
-            ai: UnavailableAIService(),
+            ai: NetworkAIProvider(manager: providerManager),
+            aiProfiles: providerManager,
             agentBridge: UnavailableAgentBridge()
         )
     }()
@@ -75,6 +81,12 @@ private struct UnavailableStorageService: StorageAnalyzing {
 private struct UnavailableAIService: AIProviding {
     func availableModels(for _: AIProviderProfile) async throws -> [AIModel] { throw ServiceError.unavailable(feature: "ИИ-провайдеры") }
     func send(messages _: [ChatMessage], using _: AIProviderProfile, modelID _: String) async throws -> ChatMessage { throw ServiceError.unavailable(feature: "ИИ-чат") }
+}
+
+private struct UnavailableAIProfileManager: AIProfileManaging {
+    func profiles() async -> [AIProviderProfile] { [] }
+    func save(profile _: AIProviderProfile, apiKey _: String?) async throws { throw ServiceError.unavailable(feature: "ИИ-провайдеры") }
+    func delete(profileID _: UUID) async throws { throw ServiceError.unavailable(feature: "ИИ-провайдеры") }
 }
 
 private actor UnavailableAgentBridge: AgentBridging {
