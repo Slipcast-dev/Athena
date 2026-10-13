@@ -16,11 +16,20 @@ APP_MACOS="$APP_CONTENTS/MacOS"
 APP_BINARY="$APP_MACOS/$APP_NAME"
 INFO_PLIST="$APP_CONTENTS/Info.plist"
 
-pkill -x "$APP_NAME" >/dev/null 2>&1 || true
+BUILD_CONFIGURATION="debug"
+if [[ "$MODE" == "--package" || "$MODE" == "package" ]]; then
+  # Релизный бинарник нужен для передачи на ручную подпись; запускать его
+  # автоматически не следует, поскольку это операция подготовки артефакта.
+  BUILD_CONFIGURATION="release"
+fi
+
+if [[ "$MODE" != "--package" && "$MODE" != "package" ]]; then
+  pkill -x "$APP_NAME" >/dev/null 2>&1 || true
+fi
 
 cd "$ROOT_DIR"
-swift build
-BUILD_BINARY="$(swift build --show-bin-path)/$APP_NAME"
+swift build -c "$BUILD_CONFIGURATION"
+BUILD_BINARY="$(swift build -c "$BUILD_CONFIGURATION" --show-bin-path)/$APP_NAME"
 
 rm -rf "$APP_BUNDLE"
 mkdir -p "$APP_MACOS"
@@ -48,6 +57,10 @@ cat >"$INFO_PLIST" <<PLIST
 </plist>
 PLIST
 
+# Ad-hoc подпись проверяет целостность локального артефакта, но не заменяет
+# Developer ID Application и не делает приложение пригодным для распространения.
+/usr/bin/codesign --force --sign - "$APP_BUNDLE"
+
 open_app() { /usr/bin/open -n "$APP_BUNDLE"; }
 
 case "$MODE" in
@@ -56,5 +69,6 @@ case "$MODE" in
   --logs|logs) open_app; /usr/bin/log stream --info --style compact --predicate "process == \"$APP_NAME\"" ;;
   --telemetry|telemetry) open_app; /usr/bin/log stream --info --style compact --predicate "subsystem == \"$BUNDLE_ID\"" ;;
   --verify|verify) open_app; sleep 1; pgrep -x "$APP_NAME" >/dev/null ;;
-  *) echo "usage: $0 [run|--debug|--logs|--telemetry|--verify]" >&2; exit 2 ;;
+  --package|package) /usr/bin/plutil -lint "$INFO_PLIST"; /usr/bin/codesign --verify --deep --strict "$APP_BUNDLE"; echo "Локальный релизный пакет: $APP_BUNDLE" ;;
+  *) echo "usage: $0 [run|--debug|--logs|--telemetry|--verify|--package]" >&2; exit 2 ;;
 esac

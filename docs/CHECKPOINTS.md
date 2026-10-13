@@ -121,3 +121,20 @@
   Harness не проверялись без внешней конфигурации и ключей.
 - **Коммит:** `test(stability): harden storage boundary cases`.
 - **Тег:** `CP-09-TESTING`.
+
+## CP-10-RELEASE
+
+- **Дата:** 13 октября 2026
+- **Статус:** завершён (локальная подготовка)
+- **Содержание:** добавлены `README.md`, `CHANGELOG.md`, `AGENTS.md` и
+  `docs/RELEASE.md`. Сценарий сборки получил режим `--package` для создания
+  оптимизированного локального `.app` и проверки его структуры.
+- **Проверки:** `swift test` — 24 теста пройдены; `swift build` — успешно;
+  `./script/build_and_run.sh --verify` — успешно;
+  `./script/build_and_run.sh --package` — успешно. Артефакт имеет архитектуру
+  arm64, minimum system version 14.0 и проходит `codesign --verify --deep --strict`.
+- **Ограничения:** подпись ad-hoc не является подписью Developer ID. Без
+  сертификата, Team ID и учётных данных Apple нельзя выполнить hardened runtime,
+  notarization и внешний выпуск.
+- **Коммит:** `docs(release): prepare local distribution workflow`.
+- **Тег:** `CP-10-RELEASE`.
