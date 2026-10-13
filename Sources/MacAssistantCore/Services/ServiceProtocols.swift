@@ -13,7 +13,7 @@ public protocol SystemDiagnosing: Sendable {
 
 public protocol StorageAnalyzing: Sendable {
     func storageOverview() async throws -> StorageOverview
-    func scanDirectory(at url: URL) async throws -> [StorageItem]
+    func scanDirectory(at url: URL, minimumSizeBytes: UInt64) async throws -> [StorageItem]
 }
 
 public protocol AIProviding: Sendable {

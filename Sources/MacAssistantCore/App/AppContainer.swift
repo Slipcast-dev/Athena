@@ -51,7 +51,7 @@ public struct ServiceDependencies: Sendable {
         return ServiceDependencies(
             systemInformation: systemInformation,
             diagnostics: SystemDiagnosticsService(systemInformation: systemInformation),
-            storage: UnavailableStorageService(),
+            storage: StorageAnalysisService(),
             ai: UnavailableAIService(),
             agentBridge: UnavailableAgentBridge()
         )
@@ -69,7 +69,7 @@ private struct UnavailableDiagnosticsService: SystemDiagnosing {
 
 private struct UnavailableStorageService: StorageAnalyzing {
     func storageOverview() async throws -> StorageOverview { throw ServiceError.unavailable(feature: "Анализ накопителя") }
-    func scanDirectory(at _: URL) async throws -> [StorageItem] { throw ServiceError.unavailable(feature: "Сканирование накопителя") }
+    func scanDirectory(at _: URL, minimumSizeBytes _: UInt64) async throws -> [StorageItem] { throw ServiceError.unavailable(feature: "Сканирование накопителя") }
 }
 
 private struct UnavailableAIService: AIProviding {
