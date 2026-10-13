@@ -19,7 +19,10 @@ let package = Package(
         .target(name: "MacAssistantCore"),
         .executableTarget(
             name: "MacAssistant",
-            dependencies: ["MacAssistantCore"]
+            dependencies: ["MacAssistantCore"],
+            // PNG Афины доступен SwiftUI через Bundle.module и применяется в
+            // интерфейсе раздела «Агенты» без обращения к внешнему пути.
+            resources: [.process("Resources")]
         ),
         .executableTarget(
             name: "MacAssistantMCP",
