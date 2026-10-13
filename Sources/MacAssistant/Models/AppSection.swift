@@ -32,7 +32,9 @@ enum AppSection: String, CaseIterable, Identifiable {
         case .storage: "internaldrive"
         case .aiChat: "bubble.left.and.bubble.right"
         case .providers: "network"
-        case .agents: "point.3.connected.trianglepath.dotted"
+        // Профиль головы подчёркивает образ Афины и ИИ-помощника, оставаясь
+        // контурным системным символом в одном стиле с остальным меню.
+        case .agents: "brain.head.profile"
         case .settings: "gearshape"
         }
     }
