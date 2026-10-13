@@ -23,6 +23,8 @@ git push --tags
 - `CONTRIBUTING.md` фиксирует правила безопасного вклада.
 - `.gitignore` исключает локальные сборки, IDE-настройки, `.env`-файлы и
   отладочные артефакты из истории Git.
+- `CODE_OF_CONDUCT.md`, `SECURITY.md` и шаблон pull request закрывают основные
+  требования Community Profile GitHub.
 
 ## Перед GitHub Release
 

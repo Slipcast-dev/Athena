@@ -1,8 +1,34 @@
-# Mac Assistant
+<p align="center">
+  <img src="docs/assets/athena-banner.png" alt="Цифровая Афина — образ Mac Assistant" width="100%">
+</p>
+
+<h1 align="center">Mac Assistant</h1>
+
+<p align="center">
+  <strong>Локальный помощник для здоровья вашего Mac — под защитой Афины.</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/macOS-14%2B-1E3A8A?style=for-the-badge&logo=apple&logoColor=white" alt="macOS 14+">
+  <img src="https://img.shields.io/badge/Swift-5.9%2B-F05138?style=for-the-badge&logo=swift&logoColor=white" alt="Swift 5.9+">
+  <img src="https://img.shields.io/badge/MCP-local%20only-6D28D9?style=for-the-badge" alt="Локальный MCP">
+</p>
 
 Нативный локальный помощник для macOS 14+ на SwiftUI. Он показывает состояние
 Mac, формирует локальный диагностический отчёт, безопасно анализирует выбранный
 каталог и подключает ИИ-провайдеров только по явной настройке пользователя.
+
+> **Образ проекта:** Афина — ясность, защита и разумные решения. Mac Assistant
+> не действует скрытно: опасные операции отсутствуют, а облачные данные
+> отправляются только с явного согласия.
+
+## Навигация
+
+- [Возможности](#возможности)
+- [Быстрый запуск](#быстрый-запуск)
+- [Codex, DeepSeek Harness и MCP](#codex-deepseek-harness-и-mcp)
+- [Безопасность и данные](#безопасность-и-данные)
+- [Участие и публикация](#участие-и-публикация)
 
 ## Возможности
 
@@ -111,3 +137,10 @@ swift build
 
 Состояние этапов разработки — в [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md),
 контрольные точки — в [docs/CHECKPOINTS.md](docs/CHECKPOINTS.md).
+
+## Участие и публикация
+
+- [CONTRIBUTING.md](CONTRIBUTING.md) — правила безопасного вклада.
+- [SECURITY.md](SECURITY.md) — сообщение об уязвимостях и границы безопасности.
+- [docs/GITHUB_PUBLICATION.md](docs/GITHUB_PUBLICATION.md) — первая публикация
+  и правила GitHub Release.
