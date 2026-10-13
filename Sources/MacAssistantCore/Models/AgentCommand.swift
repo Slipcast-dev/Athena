@@ -45,3 +45,33 @@ public struct AgentCommandResult: Codable, Equatable, Sendable {
         self.text = text
     }
 }
+
+/// Поддерживаемые клиенты, которые могут запускать локальный MCP-исполнитель.
+public enum MCPClient: String, Codable, CaseIterable, Sendable, Identifiable {
+    case codex
+    case deepSeekHarness
+
+    public var id: String { rawValue }
+
+    public var title: String {
+        switch self {
+        case .codex: "Codex"
+        case .deepSeekHarness: "DeepSeek Harness"
+        }
+    }
+}
+
+/// Состояние подключения намеренно не содержит пути, секреты или вывод сторонних процессов.
+public enum MCPConnectionStatus: Equatable, Sendable {
+    case notConfigured
+    case configured
+    case unavailable(reason: String)
+
+    public var title: String {
+        switch self {
+        case .notConfigured: "Не подключён"
+        case .configured: "Подключён"
+        case let .unavailable(reason): reason
+        }
+    }
+}

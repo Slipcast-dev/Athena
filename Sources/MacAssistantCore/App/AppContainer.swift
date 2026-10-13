@@ -24,6 +24,7 @@ public struct ServiceDependencies: Sendable {
     public let ai: any AIProviding
     public let aiProfiles: any AIProfileManaging
     public let agentBridge: any AgentBridging
+    public let mcpConnections: any MCPConnectionManaging
 
     public init(
         systemInformation: any SystemInformationProviding,
@@ -31,7 +32,8 @@ public struct ServiceDependencies: Sendable {
         storage: any StorageAnalyzing,
         ai: any AIProviding,
         aiProfiles: any AIProfileManaging,
-        agentBridge: any AgentBridging
+        agentBridge: any AgentBridging,
+        mcpConnections: any MCPConnectionManaging
     ) {
         self.systemInformation = systemInformation
         self.diagnostics = diagnostics
@@ -39,6 +41,7 @@ public struct ServiceDependencies: Sendable {
         self.ai = ai
         self.aiProfiles = aiProfiles
         self.agentBridge = agentBridge
+        self.mcpConnections = mcpConnections
     }
 
     public static let unavailable = ServiceDependencies(
@@ -47,7 +50,8 @@ public struct ServiceDependencies: Sendable {
         storage: UnavailableStorageService(),
         ai: UnavailableAIService(),
         aiProfiles: UnavailableAIProfileManager(),
-        agentBridge: UnavailableAgentBridge()
+        agentBridge: UnavailableAgentBridge(),
+        mcpConnections: UnavailableMCPConnectionService()
     )
 
     public static let live: ServiceDependencies = {
@@ -63,7 +67,8 @@ public struct ServiceDependencies: Sendable {
                 systemInformation: systemInformation,
                 diagnostics: SystemDiagnosticsService(systemInformation: systemInformation),
                 storage: StorageAnalysisService()
-            )
+            ),
+            mcpConnections: MCPConnectionService()
         )
     }()
 }
@@ -100,4 +105,9 @@ private actor UnavailableAgentBridge: AgentBridging {
     }
     func activeTasks() async -> [AgentTask] { [] }
     func cancelTask(id _: UUID) async {}
+}
+
+private struct UnavailableMCPConnectionService: MCPConnectionManaging {
+    func status(for _: MCPClient) async -> MCPConnectionStatus { .unavailable(reason: "Подключение MCP недоступно.") }
+    func connect(_: MCPClient) async throws -> MCPConnectionStatus { throw ServiceError.unavailable(feature: "Подключение MCP") }
 }

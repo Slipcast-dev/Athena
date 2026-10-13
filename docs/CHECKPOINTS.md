@@ -157,3 +157,22 @@
   с Developer ID и notarization.
 - **Коммит:** `feat(app): add themes MCP setup and installer`.
 - **Тег:** `CP-11-AGENT-CONTROL-INSTALLER-THEME`.
+
+## CP-12-AUTOMATIC-MCP-AND-GITHUB
+
+- **Дата:** 13 октября 2026
+- **Статус:** завершён
+- **Содержание:** экран «Агенты» получил статусы и кнопки автоматической
+  регистрации Mac Assistant MCP в Codex и DeepSeek Harness. Добавлены GitHub
+  Actions, шаблон bug report, CONTRIBUTING и руководство публикации.
+- **Безопасность:** UI запускает только фиксированные команды `codex mcp
+  remove/add` для своего имени. Harness получает один idempotent patch с
+  `id: mcp-mac-assistant`; произвольные shell-команды и настройки не принимаются.
+- **Проверки:** `swift test` — 25 тестов пройдены; `swift build` — успешно;
+  тест проверяет создание одного Harness patch при повторном подключении.
+- **Артефакт:** `MacAssistant-0.1.0-unsigned.pkg` скопирован на рабочий стол.
+- **Ограничения:** автоматическое подключение Codex/Harness не проверялось с
+  реально установленными клиентами, а публичный installer требует подписи
+  Developer ID и notarization.
+- **Коммит:** `feat(agent): add automatic MCP setup and GitHub CI`.
+- **Тег:** `CP-12-AUTOMATIC-MCP-AND-GITHUB`.

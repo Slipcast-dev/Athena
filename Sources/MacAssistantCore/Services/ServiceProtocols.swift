@@ -38,6 +38,13 @@ public protocol AgentBridging: Sendable {
     func cancelTask(id: UUID) async
 }
 
+/// Локальная интеграция клиентов MCP. Она не выдаёт агенту доступ к shell:
+/// запускаются только фиксированные операции регистрации собственного исполнителя.
+public protocol MCPConnectionManaging: Sendable {
+    func status(for client: MCPClient) async -> MCPConnectionStatus
+    func connect(_ client: MCPClient) async throws -> MCPConnectionStatus
+}
+
 public enum ServiceError: LocalizedError, Equatable, Sendable {
     case unavailable(feature: String)
     case invalidInput(reason: String)
