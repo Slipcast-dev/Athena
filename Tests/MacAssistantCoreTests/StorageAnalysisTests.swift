@@ -8,6 +8,21 @@ final class StorageAnalysisTests: XCTestCase {
         }
     }
 
+    func testValidatorRejectsSymbolicLinkChosenAsRootDirectory() throws {
+        let target = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        let link = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: target, withIntermediateDirectories: true)
+        try FileManager.default.createSymbolicLink(at: link, withDestinationURL: target)
+        defer {
+            try? FileManager.default.removeItem(at: link)
+            try? FileManager.default.removeItem(at: target)
+        }
+
+        XCTAssertThrowsError(try StoragePathValidator.validatedDirectory(link)) { error in
+            XCTAssertEqual(error as? StorageAnalysisError, .invalidDirectory)
+        }
+    }
+
     func testScanFindsAndSortsLargeFilesWithoutFollowingSymlink() async throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
@@ -37,6 +52,21 @@ final class StorageAnalysisTests: XCTestCase {
             XCTFail("Отменённое сканирование не должно возвращать результаты")
         } catch is CancellationError {
             // Ожидаемое завершение: сервис проверяет отмену в цикле перечисления.
+        }
+    }
+
+    func testCancelledScanOfEmptyDirectoryStopsBeforeEnumeration() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let task = Task { try await StorageAnalysisService().scanDirectory(at: root, minimumSizeBytes: 0) }
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Отменённое сканирование пустого каталога не должно возвращать результат")
+        } catch is CancellationError {
+            // Проверка отмены должна выполняться до обращения к файловому перечислителю.
         }
     }
 }

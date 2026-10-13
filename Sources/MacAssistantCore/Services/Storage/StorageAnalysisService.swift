@@ -23,6 +23,10 @@ public actor StorageAnalysisService: StorageAnalyzing {
     }
 
     public func scanDirectory(at url: URL, minimumSizeBytes: UInt64) async throws -> [StorageItem] {
+        // Проверяем отмену до работы с файловой системой. Это особенно важно для
+        // пустого каталога: без этой проверки цикл перечисления не выполнится и
+        // отменённая операция ошибочно вернёт обычный пустой результат.
+        try Task.checkCancellation()
         let root = try StoragePathValidator.validatedDirectory(url)
         let keys: [URLResourceKey] = [.isRegularFileKey, .isDirectoryKey, .isSymbolicLinkKey, .fileSizeKey, .contentModificationDateKey]
         guard let enumerator = fileManager.enumerator(
@@ -62,7 +66,12 @@ public actor StorageAnalysisService: StorageAnalyzing {
 public enum StoragePathValidator {
     public static func validatedDirectory(_ url: URL) throws -> URL {
         guard url.isFileURL else { throw StorageAnalysisError.invalidDirectory }
-        let standardized = url.standardizedFileURL.resolvingSymlinksInPath()
+        let standardized = url.standardizedFileURL
+        // Выбранная корневая ссылка может вести за пределы каталога, на который
+        // пользователь дал разрешение через NSOpenPanel. В MVP такие ссылки не
+        // раскрываем и не сканируем; это сохраняет понятную границу TCC.
+        let values = try? standardized.resourceValues(forKeys: [.isSymbolicLinkKey])
+        guard values?.isSymbolicLink != true else { throw StorageAnalysisError.invalidDirectory }
         var isDirectory: ObjCBool = false
         guard FileManager.default.fileExists(atPath: standardized.path, isDirectory: &isDirectory), isDirectory.boolValue else {
             throw StorageAnalysisError.invalidDirectory
