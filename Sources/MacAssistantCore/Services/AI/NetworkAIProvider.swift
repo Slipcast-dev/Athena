@@ -2,7 +2,7 @@ import Foundation
 
 /// Сетевой адаптер поддерживает подтверждённый контракт OpenAI-compatible APIs
 /// (OpenAI, OpenRouter, DeepSeek и совместимые серверы) и отдельный локальный Ollama.
-public struct NetworkAIProvider: AIProviding {
+public struct NetworkAIProvider: AIStreamingProviding {
     private let manager: AIProviderManager
     private let session: URLSession
 
@@ -33,6 +33,29 @@ public struct NetworkAIProvider: AIProviding {
         let (data, _) = try await perform(request)
         guard let content = try JSONDecoder().decode(OpenAIChatResponse.self, from: data).choices.first?.message.content else { throw AIProviderError.invalidResponse }
         return ChatMessage(role: .assistant, content: content)
+    }
+
+    public func stream(messages: [ChatMessage], using profile: AIProviderProfile, modelID: String) -> AsyncThrowingStream<String, Error> {
+        AsyncThrowingStream { continuation in
+            let task = Task {
+                do {
+                    guard profile.kind != .ollama else { throw AIProviderError.invalidResponse }
+                    var request = try await request(for: profile, path: "chat/completions")
+                    request.httpMethod = "POST"
+                    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                    request.httpBody = try JSONEncoder().encode(OpenAIStreamingRequest(model: modelID, messages: messages.map(OpenAIChatMessage.init), stream: true))
+                    let (bytes, response) = try await session.bytes(for: request)
+                    guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else { throw AIProviderError.invalidResponse }
+                    for try await line in bytes.lines where line.hasPrefix("data:") {
+                        let value = line.dropFirst(5).trimmingCharacters(in: .whitespaces)
+                        if value == "[DONE]" { break }
+                        if let delta = try? JSONDecoder().decode(OpenAIStreamFrame.self, from: Data(value.utf8)).choices.first?.delta.content, !delta.isEmpty { continuation.yield(delta) }
+                    }
+                    continuation.finish()
+                } catch { continuation.finish(throwing: error) }
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
     }
 
     private func sendOllama(messages: [ChatMessage], profile: AIProviderProfile, modelID: String) async throws -> ChatMessage {
@@ -76,9 +99,13 @@ private struct OpenAIModel: Decodable { let id: String }
 private struct OllamaModelsResponse: Decodable { let models: [OllamaModel] }
 private struct OllamaModel: Decodable { let name: String }
 private struct OpenAIChatRequest: Encodable { let model: String; let messages: [OpenAIChatMessage] }
+private struct OpenAIStreamingRequest: Encodable { let model: String; let messages: [OpenAIChatMessage]; let stream: Bool }
 private struct OllamaChatRequest: Encodable { let model: String; let messages: [OpenAIChatMessage]; let stream: Bool }
 private struct OpenAIChatResponse: Decodable { let choices: [OpenAIChoice] }
 private struct OpenAIChoice: Decodable { let message: OpenAIChatMessage }
+private struct OpenAIStreamFrame: Decodable { let choices: [OpenAIStreamChoice] }
+private struct OpenAIStreamChoice: Decodable { let delta: OpenAIStreamDelta }
+private struct OpenAIStreamDelta: Decodable { let content: String? }
 private struct OllamaChatResponse: Decodable { let message: OpenAIChatMessage }
 private struct OpenAIChatMessage: Codable {
     let role: ChatMessageRole

@@ -21,6 +21,10 @@ public protocol AIProviding: Sendable {
     func send(messages: [ChatMessage], using profile: AIProviderProfile, modelID: String) async throws -> ChatMessage
 }
 
+public protocol AIStreamingProviding: AIProviding {
+    func stream(messages: [ChatMessage], using profile: AIProviderProfile, modelID: String) -> AsyncThrowingStream<String, Error>
+}
+
 public protocol AIProfileManaging: Sendable {
     func profiles() async -> [AIProviderProfile]
     func save(profile: AIProviderProfile, apiKey: String?) async throws

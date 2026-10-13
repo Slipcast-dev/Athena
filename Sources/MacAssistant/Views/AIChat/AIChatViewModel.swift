@@ -18,7 +18,19 @@ final class AIChatViewModel: ObservableObject {
     func send() {
         guard let profile = profiles.first(where: { $0.id == selectedProfileID }), !modelID.isEmpty, !input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         let user = ChatMessage(role: .user, content: input); input = ""; conversation.messages.append(user); conversation.updatedAt = .now; state = .loading
-        requestTask = Task { [weak self] in guard let self else { return }; do { let reply = try await ai.send(messages: conversation.messages, using: profile, modelID: modelID); guard !Task.isCancelled else { return }; conversation.messages.append(reply); conversation.title = conversation.messages.first?.content.prefix(40).description ?? "Диалог"; conversation.updatedAt = .now; try await history.save([conversation]); state = .ready } catch is CancellationError { state = .ready } catch { state = .error(message: error.localizedDescription) } }
+        requestTask = Task { [weak self] in guard let self else { return }; do {
+            if let streaming = ai as? any AIStreamingProviding, profile.kind != .ollama {
+                let assistant = ChatMessage(role: .assistant, content: "")
+                conversation.messages.append(assistant)
+                for try await chunk in streaming.stream(messages: Array(conversation.messages.dropLast()), using: profile, modelID: modelID) {
+                    guard !Task.isCancelled else { return }
+                    var last = conversation.messages.removeLast()
+                    last = ChatMessage(id: last.id, role: last.role, content: last.content + chunk, createdAt: last.createdAt)
+                    conversation.messages.append(last)
+                }
+            } else { conversation.messages.append(try await ai.send(messages: conversation.messages, using: profile, modelID: modelID)) }
+            conversation.title = conversation.messages.first?.content.prefix(40).description ?? "Диалог"; conversation.updatedAt = .now; try await history.save([conversation]); state = .ready
+        } catch is CancellationError { state = .ready } catch { state = .error(message: error.localizedDescription) } }
     }
     func cancel() { requestTask?.cancel() }
 }
