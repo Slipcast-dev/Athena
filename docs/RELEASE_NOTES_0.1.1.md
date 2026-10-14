@@ -19,7 +19,7 @@ Gatekeeper может предупредить или заблокировать
 
 35 XCTest проходят успешно; debug/release-сборки и целостность распакованного
 приложения проверены. Подробности и границы проверки:
-[аудит](https://github.com/Slipcast-dev/MacAssistant/blob/main/docs/AUDIT_2026-10-14.md).
+[аудит](https://github.com/Slipcast-dev/Athena/blob/main/docs/AUDIT_2026-10-14.md).
 Визуальная проверка интерфейса и запросы к реальным облачным API не выполнены.
 
 Файл: `MacAssistant-0.1.1-unsigned.pkg`.

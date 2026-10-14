@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/athena-banner.png" alt="Цифровая Афина — образ Mac Assistant" width="100%">
+  <img src="docs/assets/athena-banner.png" alt="Цифровая Афина — образ Athena" width="100%">
 </p>
 
 <h1 align="center">Athena</h1>
@@ -50,7 +50,8 @@ Mac, формирует локальный диагностический отч
 
 ## Требования
 
-- macOS 14 или новее, Apple Silicon либо Intel Mac.
+- Готовый установщик: macOS 14 или новее, Apple Silicon (arm64).
+- Сборка из исходников для Intel предусмотрена SwiftPM, но не проверялась на Intel Mac.
 - Swift 5.9+ и инструменты командной строки Xcode для сборки из исходников.
 - Интернет и API-ключ нужны только для облачного ИИ. Локальная диагностика и
   анализ накопителя работают офлайн.
@@ -58,7 +59,8 @@ Mac, формирует локальный диагностический отч
 ## Быстрый запуск
 
 ```zsh
-cd /Users/Aleksandr/Documents/Проекты/MacAssistant
+git clone https://github.com/Slipcast-dev/Athena.git
+cd Athena
 swift test
 ./script/build_and_run.sh
 ```
@@ -91,10 +93,11 @@ Developer ID Application, hardened runtime и notarization Apple.
 пользователем macOS.
 
 Тестовый установщик доступен в
-[GitHub Release v0.1.1-unsigned](https://github.com/Slipcast-dev/MacAssistant/releases/tag/v0.1.1-unsigned).
+[GitHub Release Athena v0.1.3-unsigned](https://github.com/Slipcast-dev/Athena/releases/tag/v0.1.3-unsigned).
 Он не подписан Apple Developer ID и не нотарифицирован Apple.
 Копия пакета и SHA-256 также находятся в [installers](installers/README.md).
-Версия Athena 0.1.3 подготовлена локально; её публикация ещё не выполнялась.
+Исходники и установщик Athena 0.1.3 опубликованы в
+[Slipcast-dev/Athena](https://github.com/Slipcast-dev/Athena).
 [Повторный аудит](docs/AUDIT_0.1.3.md) подтверждает исправление трёх замечаний 0.1.2.
 Подключение ИИ-провайдеров выполняется только в отдельном разделе «ИИ-провайдеры».
 
@@ -153,6 +156,7 @@ Harness после подключения. Дополнительные кома
 ```zsh
 swift test
 swift build
+python3 script/check_links.py
 ```
 
 Состояние этапов разработки — в [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md),

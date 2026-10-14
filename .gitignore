@@ -16,3 +16,5 @@ xcuserdata/
 
 # Служебный файл Finder не относится к исходному коду проекта.
 .DS_Store
+__pycache__/
+*.py[cod]

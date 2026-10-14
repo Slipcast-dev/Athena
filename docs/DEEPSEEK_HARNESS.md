@@ -31,15 +31,15 @@ swift run MacAssistantMCP
 ```
 
 После установки `.pkg` MCP-исполнитель находится внутри приложения по пути
-`/Applications/MacAssistant.app/Contents/MacOS/MacAssistantMCP`. При разработке
+`/Applications/Athena.app/Contents/MacOS/MacAssistantMCP`. При разработке
 вместо него допустима команда
-`swift run --package-path /Users/Aleksandr/Documents/Проекты/MacAssistant MacAssistantMCP`.
+`swift run --package-path . MacAssistantMCP` из корня клонированного репозитория.
 Параметр `serverName` в конфигурации Harness должен быть `mac-assistant`:
 Harness публикует его инструменты под пространством имён `mcp__mac-assistant__…`.
 
 ## Подключение из приложения
 
-Основной способ подключения — раздел **Агенты** в Mac Assistant. Нажмите
+Основной способ подключения — раздел **Агенты** в Athena. Нажмите
 «Подключить» у Codex или DeepSeek Harness и подтвердите действие. Приложение
 создаёт только запись `mac-assistant`; повторное подключение не дублирует её.
 
@@ -83,7 +83,7 @@ Harness публикует его инструменты под простран
 
 ## Официальные первоисточники
 
-- DeepSeek Harness: <https://www.deepseek.com/harness/en/>
+- DeepSeek Harness: <https://www.deepseek.com/harness/>
 - Репозиторий Harness: <https://github.com/deepseek-ai/deepseek-harness>
 - Документация MCP-клиента Harness: <https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/mcp/mcp-client/README.md>
-- Документация Codex MCP: <https://developers.openai.com/learn/docs-mcp>
+- Документация Codex MCP: <https://learn.chatgpt.com/docs/extend/mcp?surface=cli>

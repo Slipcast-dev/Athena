@@ -1,15 +1,14 @@
 # Тестовые установщики Athena
 
-Новая сборка, подготовленная локально:
+Актуальная сборка:
 [Athena-0.1.3-unsigned.pkg](Athena-0.1.3-unsigned.pkg).
 Содержит исправления аудита, обновлённую иконку и имя Athena; подключение
 провайдера оставлено только в отдельном разделе.
 [Повторный аудит](../docs/AUDIT_0.1.3.md).
-Версия 0.1.3 ещё не опубликована в GitHub Releases.
-
-Ранее опубликованный установщик:
-
-[Скачать MacAssistant-0.1.1-unsigned.pkg](MacAssistant-0.1.1-unsigned.pkg)
+Версия 0.1.3 опубликована в GitHub Releases. В текущем дереве хранится только
+актуальный пакет. Старые опубликованные версии доступны в
+[истории релизов](https://github.com/Slipcast-dev/Athena/releases), а ранее
+зафиксированные файлы — в истории Git.
 
 macOS 14+, **Apple Silicon (arm64)**. Эта сборка не предназначена для Intel Mac.
 Пакет **не подписан Apple Developer ID** и **не нотарифицирован Apple**.
@@ -20,7 +19,7 @@ Gatekeeper может блокировать установку. Он опубл
 Проверка из этой папки: `shasum -a 256 -c SHA256SUMS.txt`.
 
 Идентичный файл доступен в
-[GitHub Release v0.1.1-unsigned](https://github.com/Slipcast-dev/MacAssistant/releases/tag/v0.1.1-unsigned).
+[GitHub Release v0.1.3-unsigned](https://github.com/Slipcast-dev/Athena/releases/tag/v0.1.3-unsigned).
 Установка требует подтверждения macOS и помещает приложение в `/Applications`.
 
 В текущей среде упаковки macOS добавляет служебные AppleDouble-записи `._*`.

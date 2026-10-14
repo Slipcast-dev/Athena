@@ -1,3 +1,1 @@
-a4e8021f1b485ee1d6610d09674295b47115bedef5546063007b1c425f9c6de2  MacAssistant-0.1.1-unsigned.pkg
-bdd27c26da1a121d9cb30af44d902b9a0d1906bb6f8c3cbe8c791b14dfd63e1d  MacAssistant-0.1.2-unsigned.pkg
-4c79e990562a312d232184d3e94d5cbd859ec8cd710a31bbff92996ff34f030a  Athena-0.1.3-unsigned.pkg
+fea342da3ff494d1ae8a04d7847a0de9bf9a8fa8729d2a56046ef951c24e3787  Athena-0.1.3-unsigned.pkg

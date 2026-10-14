@@ -1,6 +1,6 @@
 # Сторонние компоненты
 
-Mac Assistant использует Yams 6.2.2 (https://github.com/jpsim/Yams), содержащий
+Athena использует Yams 6.2.2 (https://github.com/jpsim/Yams), содержащий
 LibYAML. Их условия сохраняются независимо от авторской лицензии приложения.
 
 ## Yams и LibYAML

@@ -3,7 +3,7 @@
 ## Текущая публикация
 
 Исходный код опубликован в
-[Slipcast-dev/MacAssistant](https://github.com/Slipcast-dev/MacAssistant).
+[Slipcast-dev/Athena](https://github.com/Slipcast-dev/Athena).
 Репозиторий публичный, его ветка по умолчанию — `main`; добавлены темы `macos`,
 `swift`, `swiftui`, `mcp`, `ai`, `diagnostics`, `deepseek`, `codex` и
 `apple-silicon`.
@@ -22,13 +22,13 @@
 не распознать её как типовую лицензию в Community Profile или в карточке
 репозитория; это ожидаемое следствие сохранения авторского контроля.
 
-## Подготовленное обновление Athena 0.1.3
+## Обновление Athena 0.1.3
 
-Исходники, тесты, снимки дизайна, отчёт аудита, установщик и SHA-256 подготовлены
-локально. Удалённый репозиторий и GitHub Release остаются на версии 0.1.1.
-Заметки будущего релиза: [RELEASE_NOTES_0.1.3.md](RELEASE_NOTES_0.1.3.md).
+Исходники, тесты, снимки дизайна, отчёт аудита, установщик и SHA-256 опубликованы.
+Репозиторий переименован в `Slipcast-dev/Athena`; origin и текущие ссылки обновлены.
+Заметки релиза: [RELEASE_NOTES_0.1.3.md](RELEASE_NOTES_0.1.3.md).
 Три замечания версии 0.1.2 исправлены и проверены в
-[повторном аудите](AUDIT_0.1.3.md). Имя репозитория и MCP ID не менялись.
+[повторном аудите](AUDIT_0.1.3.md). MCP ID и технические модули не менялись.
 
 ## Для новой копии репозитория
 
@@ -61,12 +61,13 @@ git push --tags
 ## Предварительный GitHub Release
 
 Опубликован предварительный релиз
-[`v0.1.1-unsigned`](https://github.com/Slipcast-dev/MacAssistant/releases/tag/v0.1.1-unsigned)
-с `MacAssistant-0.1.1-unsigned.pkg`. Он предназначен только для технического
+[`v0.1.3-unsigned`](https://github.com/Slipcast-dev/Athena/releases/tag/v0.1.3-unsigned)
+с `Athena-0.1.3-unsigned.pkg`. Он предназначен только для технического
 тестирования: пакет **не подписан Apple Developer ID** и **не нотарифицирован
 Apple**. macOS может заблокировать его запуск или вывести предупреждение
 Gatekeeper. Устанавливать его следует только в тестовой среде и только при
 осознанном доверии к исходному репозиторию.
 
-Для обычного публичного выпуска требуется новый `.pkg`, подписанный сертификатом
-Developer ID Application, с hardened runtime и успешной notarization Apple.
+Для обычного публичного выпуска приложение подписывается Developer ID Application
+с hardened runtime, установщик — Developer ID Installer; затем требуется
+успешная notarization Apple.

@@ -41,6 +41,7 @@ unsigned `.pkg` публикуется только как предварите�
 об отсутствии Developer ID и notarization. Подробности:
 [GITHUB_PUBLICATION.md](GITHUB_PUBLICATION.md).
 
-Версия 0.1.3 подготовлена локально. Установщик и SHA-256 находятся в `installers/`,
-заметки будущего релиза — `docs/RELEASE_NOTES_0.1.3.md`.
-Push и создание релиза 0.1.3 ещё не выполнялись.
+Версия 0.1.3 опубликована в
+[GitHub Releases](https://github.com/Slipcast-dev/Athena/releases/tag/v0.1.3-unsigned).
+Установщик и SHA-256 находятся в `installers/`, заметки релиза —
+`docs/RELEASE_NOTES_0.1.3.md`.

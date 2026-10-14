@@ -18,6 +18,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Запустить XCTest
         run: swift test
+      - name: Проверить локальные ссылки документации
+        run: python3 script/check_links.py
       - name: Проверить release-сборку
         run: swift build -c release
       - name: Проверить отсутствие секретов в исходниках
