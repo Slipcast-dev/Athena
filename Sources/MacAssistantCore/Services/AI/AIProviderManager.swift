@@ -11,18 +11,30 @@ public protocol SecretStoring: Sendable {
 /// не используется: в нём сохраняются только Codable-профили без секретов.
 public struct KeychainSecretStore: SecretStoring {
     private let service = "com.macassistant.api-keys"
-    public init() {}
+    private let writer: any KeychainWriting
+    public init() { writer = SystemKeychainWriter() }
+    /// Системная граница подменяется только в тестах ошибок Keychain.
+    init(writer: any KeychainWriting) { self.writer = writer }
 
     public func save(secret: String, account: String) throws {
-        try delete(account: account)
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
-            kSecAttrAccount as String: account,
+            kSecAttrAccount as String: account
+        ]
+        let attributes: [String: Any] = [
             kSecValueData as String: Data(secret.utf8),
             kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlocked
         ]
-        guard SecItemAdd(query as CFDictionary, nil) == errSecSuccess else { throw AIProviderError.secretStorageFailed }
+        // SecItemUpdate сохраняет старое значение при ошибке обновления.
+        // Добавляем запись только когда она действительно отсутствует.
+        let status = writer.update(query: query, attributes: attributes)
+        if status == errSecItemNotFound {
+            let addition = query.merging(attributes) { _, new in new }
+            guard writer.add(query: addition) == errSecSuccess else { throw AIProviderError.secretStorageFailed }
+        } else if status != errSecSuccess {
+            throw AIProviderError.secretStorageFailed
+        }
     }
 
     public func load(account: String) throws -> String? {
@@ -39,6 +51,18 @@ public struct KeychainSecretStore: SecretStoring {
         let status = SecItemDelete(query as CFDictionary)
         guard status == errSecSuccess || status == errSecItemNotFound else { throw AIProviderError.secretStorageFailed }
     }
+}
+
+protocol KeychainWriting: Sendable {
+    func update(query: [String: Any], attributes: [String: Any]) -> OSStatus
+    func add(query: [String: Any]) -> OSStatus
+}
+
+private struct SystemKeychainWriter: KeychainWriting {
+    func update(query: [String: Any], attributes: [String: Any]) -> OSStatus {
+        SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
+    }
+    func add(query: [String: Any]) -> OSStatus { SecItemAdd(query as CFDictionary, nil) }
 }
 
 public enum AIEndpointValidator {

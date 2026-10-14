@@ -23,7 +23,7 @@ struct ChatMessageRow: View {
             VStack(alignment: .leading, spacing: ChatStyle.smallGap) {
                 if !isUser {
                     HStack(spacing: ChatStyle.smallGap) {
-                        Text("Mac Assistant").font(.subheadline.weight(.semibold))
+                        Text("Athena").font(.subheadline.weight(.semibold))
                         if isGenerating {
                             ProgressView().controlSize(.small)
                             Text("Отвечает…").font(.caption).foregroundStyle(.secondary)
@@ -58,6 +58,6 @@ struct ChatMessageRow: View {
             if !isUser { Spacer(minLength: 0) }
         }
         .accessibilityElement(children: .contain)
-        .accessibilityLabel(isUser ? "Вы" : "Mac Assistant")
+        .accessibilityLabel(isUser ? "Вы" : "Athena")
     }
 }

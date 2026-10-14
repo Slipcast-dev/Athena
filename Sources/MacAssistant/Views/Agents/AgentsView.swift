@@ -68,7 +68,7 @@ struct AgentsView: View {
                 }
                 Button("Отмена", role: .cancel) { connectionTarget = nil }
             } message: {
-                Text("Приложение зарегистрирует только собственный MCP-исполнитель Mac Assistant. Другие настройки клиента не будут изменены.")
+                Text("Приложение зарегистрирует только собственный MCP-исполнитель Athena. Другие настройки клиента не будут изменены.")
             }
             .confirmationDialog(
                 "Отключить MCP-мост?",
@@ -85,7 +85,7 @@ struct AgentsView: View {
                 }
                 Button("Отмена", role: .cancel) { disconnectionTarget = nil }
             } message: {
-                Text("Будет удалена только запись MCP-сервера Mac Assistant. Остальные MCP-серверы и настройки клиента сохранятся.")
+                Text("Будет удалена только запись MCP-сервера Athena. Остальные MCP-серверы и настройки клиента сохранятся.")
             }
             .alert("Не удалось подключить MCP", isPresented: Binding(get: { viewModel.error != nil }, set: { if !$0 { viewModel.error = nil } })) {
                 Button("OK", role: .cancel) {}

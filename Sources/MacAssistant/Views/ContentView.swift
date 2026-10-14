@@ -18,8 +18,7 @@ struct ContentView: View {
         NavigationSplitView {
             SidebarView(selection: selection)
         } detail: {
-            DetailRouter(section: selection.wrappedValue ?? .dashboard, container: container,
-                         openProviders: { storedSection = AppSection.providers.rawValue })
+            DetailRouter(section: selection.wrappedValue ?? .dashboard, container: container)
         }
         .navigationSplitViewStyle(.balanced)
     }
@@ -28,7 +27,6 @@ struct ContentView: View {
 private struct DetailRouter: View {
     let section: AppSection
     let container: AppContainer
-    let openProviders: () -> Void
 
     @ViewBuilder
     var body: some View {
@@ -40,7 +38,7 @@ private struct DetailRouter: View {
         case .storage:
             StorageView(container: container)
         case .aiChat:
-            AIChatView(container: container, openProviders: openProviders)
+            AIChatView(container: container)
         case .providers:
             ProvidersView(container: container)
         case .agents:

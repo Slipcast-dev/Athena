@@ -37,7 +37,7 @@ public actor MCPConnectionService: MCPConnectionManaging {
 
     public func connect(_ client: MCPClient) async throws -> MCPConnectionStatus {
         guard let executable = executableLocator(), fileManager.isExecutableFile(atPath: executable.path) else {
-            return .unavailable(reason: "MCP-исполнитель приложения не найден. Переустановите Mac Assistant.")
+            return .unavailable(reason: "MCP-исполнитель приложения не найден. Переустановите Athena.")
         }
 
         switch client {

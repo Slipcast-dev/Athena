@@ -6,7 +6,7 @@ struct SidebarView: View {
 
     var body: some View {
         List(selection: $selection) {
-            Section("Mac Assistant") {
+            Section("Athena") {
                 ForEach(AppSection.allCases) { section in
                     // Все пункты используют контурные SF Symbols. Благодаря
                     // этому macOS одинаково применяет системный акцентный цвет
@@ -17,6 +17,6 @@ struct SidebarView: View {
             }
         }
         .listStyle(.sidebar)
-        .navigationTitle("Mac Assistant")
+        .navigationTitle("Athena")
     }
 }

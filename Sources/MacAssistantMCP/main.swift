@@ -58,7 +58,7 @@ actor MCPStdioServer {
             write(result: [
                 "protocolVersion": "2024-11-05",
                 "capabilities": ["tools": [:]],
-                "serverInfo": ["name": "mac-assistant", "version": "0.1.2"]
+                "serverInfo": ["name": "mac-assistant", "version": "0.1.3"]
             ], id: identifier)
         case "tools/list":
             let commands = await bridge.availableCommands()

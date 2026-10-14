@@ -3,14 +3,14 @@
 ## Подтверждённый локальный процесс
 
 `./script/build_and_run.sh --package` создаёт оптимизированный
-`dist/MacAssistant.app`, проверяет синтаксис `Info.plist` и целостность ad-hoc
+`dist/Athena.app`, проверяет синтаксис `Info.plist` и целостность ad-hoc
 подписи через `codesign --verify --deep --strict`.
 
 Перед передачей артефакта для локального тестирования также выполняйте
 `swift test` и `./script/build_and_run.sh --verify`.
 
 `./script/build_and_run.sh --installer` дополнительно создаёт
-`dist/MacAssistant-0.1.2-unsigned.pkg`. Он устанавливает `MacAssistant.app` в
+`dist/Athena-0.1.3-unsigned.pkg`. Он устанавливает `Athena.app` в
 `/Applications` и содержит MCP-исполнитель внутри bundle. Пакет unsigned и
 предназначен только для локальной проверки до появления сертификата Developer ID.
 
@@ -41,6 +41,6 @@ unsigned `.pkg` публикуется только как предварите�
 об отсутствии Developer ID и notarization. Подробности:
 [GITHUB_PUBLICATION.md](GITHUB_PUBLICATION.md).
 
-Версия 0.1.2 подготовлена локально. Установщик и SHA-256 находятся в `installers/`,
-заметки будущего релиза — `docs/RELEASE_NOTES_0.1.2.md`.
-Push и создание релиза 0.1.2 ещё не выполнялись.
+Версия 0.1.3 подготовлена локально. Установщик и SHA-256 находятся в `installers/`,
+заметки будущего релиза — `docs/RELEASE_NOTES_0.1.3.md`.
+Push и создание релиза 0.1.3 ещё не выполнялись.

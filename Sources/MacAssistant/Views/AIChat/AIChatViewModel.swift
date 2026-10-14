@@ -27,7 +27,7 @@ final class AIChatViewModel: ObservableObject {
     }
 
     var canRetry: Bool { retryContext != nil && !isGenerating }
-    var selectedProfileName: String { selectedProfile?.name ?? "Mac Assistant" }
+    var selectedProfileName: String { selectedProfile?.name ?? "Athena" }
     var canSend: Bool {
         isLoaded && !isGenerating && selectedProfile != nil
             && !modelID.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty

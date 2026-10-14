@@ -3,6 +3,7 @@ import MacAssistantCore
 
 @main
 struct MacAssistantApp: App {
+    @NSApplicationDelegateAdaptor(AthenaAppDelegate.self) private var appDelegate
     /// Контейнер создаётся один раз на жизненный цикл приложения: экраны в
     /// последующих блоках будут получать зависимости через него, а не создавать сервисы сами.
     private let container = AppContainer.makeDefault()
@@ -15,7 +16,7 @@ struct MacAssistantApp: App {
     }
 
     var body: some Scene {
-        WindowGroup("Mac Assistant") {
+        WindowGroup("Athena") {
             ContentView(container: container)
                 .preferredColorScheme(preferredColorScheme)
         }
@@ -25,6 +26,18 @@ struct MacAssistantApp: App {
         // пользователи macOS. Раздел в боковой панели остаётся обзором настроек.
         Settings {
             PreferencesView()
+        }
+    }
+}
+
+/// Упакованная ICNS-иконка задаётся и для Dock. В режиме SwiftPM используем
+/// исходный ресурс, поскольку самостоятельный бинарник не имеет Info.plist.
+final class AthenaAppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        let iconURL = Bundle.main.url(forResource: "Athena", withExtension: "icns")
+            ?? Bundle.module.url(forResource: "AgentAthena", withExtension: "png")
+        if let iconURL, let icon = NSImage(contentsOf: iconURL) {
+            NSApplication.shared.applicationIconImage = icon
         }
     }
 }

@@ -4,12 +4,12 @@
 set -euo pipefail
 
 MODE="${1:-}"
-APP_PATH="${2:-/Applications/MacAssistant.app}"
+APP_PATH="${2:-/Applications/Athena.app}"
 MCP_BINARY="$APP_PATH/Contents/MacOS/MacAssistantMCP"
 
 if [[ ! -x "$MCP_BINARY" ]]; then
   echo "MCP-исполнитель не найден: $MCP_BINARY" >&2
-  echo "Сначала установите MacAssistant.app или передайте путь вторым аргументом." >&2
+  echo "Сначала установите Athena.app или передайте путь вторым аргументом." >&2
   exit 1
 fi
 
@@ -39,7 +39,7 @@ case "$MODE" in
 EOF
     ;;
   *)
-    echo "usage: $0 --codex|--harness-config [путь-к-MacAssistant.app]" >&2
+    echo "usage: $0 --codex|--harness-config [путь-к-Athena.app]" >&2
     exit 2
     ;;
 esac

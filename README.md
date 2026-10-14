@@ -2,7 +2,7 @@
   <img src="docs/assets/athena-banner.png" alt="Цифровая Афина — образ Mac Assistant" width="100%">
 </p>
 
-<h1 align="center">Mac Assistant</h1>
+<h1 align="center">Athena</h1>
 
 <p align="center">
   <strong>Локальный помощник для здоровья вашего Mac — под защитой Афины.</strong>
@@ -14,11 +14,11 @@
   <img src="https://img.shields.io/badge/MCP-local%20only-6D28D9?style=for-the-badge" alt="Локальный MCP">
 </p>
 
-Нативный локальный помощник для macOS 14+ на SwiftUI. Он показывает состояние
+Athena (ранее Mac Assistant) — нативный локальный помощник для macOS 14+ на SwiftUI. Он показывает состояние
 Mac, формирует локальный диагностический отчёт, безопасно анализирует выбранный
 каталог и подключает ИИ-провайдеров только по явной настройке пользователя.
 
-> **Образ проекта:** Афина — ясность, защита и разумные решения. Mac Assistant
+> **Образ проекта:** Афина — ясность, защита и разумные решения. Athena
 > не действует скрытно: опасные операции отсутствуют, а облачные данные
 > отправляются только с явного согласия.
 
@@ -63,7 +63,7 @@ swift test
 ./script/build_and_run.sh
 ```
 
-Сценарий создаёт `dist/MacAssistant.app` и запускает его. Для проверки запуска:
+Сценарий создаёт `dist/Athena.app` и запускает его. Для проверки запуска:
 
 ```zsh
 ./script/build_and_run.sh --verify
@@ -86,7 +86,7 @@ Developer ID Application, hardened runtime и notarization Apple.
 ./script/build_and_run.sh --installer
 ```
 
-Он создаст `dist/MacAssistant-0.1.2-unsigned.pkg`. Установщик намеренно не
+Он создаст `dist/Athena-0.1.3-unsigned.pkg`. Установщик намеренно не
 запускается автоматически: установка в `/Applications` должна быть подтверждена
 пользователем macOS.
 
@@ -94,8 +94,14 @@ Developer ID Application, hardened runtime и notarization Apple.
 [GitHub Release v0.1.1-unsigned](https://github.com/Slipcast-dev/MacAssistant/releases/tag/v0.1.1-unsigned).
 Он не подписан Apple Developer ID и не нотарифицирован Apple.
 Копия пакета и SHA-256 также находятся в [installers](installers/README.md).
-Новая версия 0.1.2 подготовлена локально в этом каталоге; её публикация ещё не
-выполнялась. [Аудит версии 0.1.2](docs/AUDIT_0.1.2.md) содержит известные замечания.
+Версия Athena 0.1.3 подготовлена локально; её публикация ещё не выполнялась.
+[Повторный аудит](docs/AUDIT_0.1.3.md) подтверждает исправление трёх замечаний 0.1.2.
+Подключение ИИ-провайдеров выполняется только в отдельном разделе «ИИ-провайдеры».
+
+Bundle ID, Keychain service, имя MCP `mac-assistant` и технические SwiftPM-
+модули сохранены для совместимости. После установки под новым именем старую
+MCP-регистрацию с путём `MacAssistant.app` нужно отключить и подключить заново
+из раздела «Агенты», затем перезапустить клиент.
 
 ## Codex, DeepSeek Harness и MCP
 

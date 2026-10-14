@@ -39,6 +39,9 @@ public struct NetworkAIProvider: AIStreamingProviding {
         AsyncThrowingStream { continuation in
             let task = Task {
                 do {
+                    // Проверяем endpoint до чтения ключа, в том числе для
+                    // профилей, восстановленных из старого хранилища.
+                    try AIEndpointValidator.validate(profile)
                     guard profile.kind != .ollama else { throw AIProviderError.invalidResponse }
                     var request = try await request(for: profile, path: "chat/completions")
                     request.httpMethod = "POST"
@@ -46,11 +49,14 @@ public struct NetworkAIProvider: AIStreamingProviding {
                     request.httpBody = try JSONEncoder().encode(OpenAIStreamingRequest(model: modelID, messages: messages.map(OpenAIChatMessage.init), stream: true))
                     let (bytes, response) = try await session.bytes(for: request)
                     guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else { throw AIProviderError.invalidResponse }
+                    var decoder = OpenAIStreamDecoder()
                     for try await line in bytes.lines where line.hasPrefix("data:") {
                         let value = line.dropFirst(5).trimmingCharacters(in: .whitespaces)
+                        if let delta = try decoder.consume(value), !delta.isEmpty { continuation.yield(delta) }
                         if value == "[DONE]" { break }
-                        if let delta = try? JSONDecoder().decode(OpenAIStreamFrame.self, from: Data(value.utf8)).choices.first?.delta.content, !delta.isEmpty { continuation.yield(delta) }
                     }
+                    try Task.checkCancellation()
+                    try decoder.validateCompletion()
                     continuation.finish()
                 } catch { continuation.finish(throwing: error) }
             }
@@ -103,9 +109,6 @@ private struct OpenAIStreamingRequest: Encodable { let model: String; let messag
 private struct OllamaChatRequest: Encodable { let model: String; let messages: [OpenAIChatMessage]; let stream: Bool }
 private struct OpenAIChatResponse: Decodable { let choices: [OpenAIChoice] }
 private struct OpenAIChoice: Decodable { let message: OpenAIChatMessage }
-private struct OpenAIStreamFrame: Decodable { let choices: [OpenAIStreamChoice] }
-private struct OpenAIStreamChoice: Decodable { let delta: OpenAIStreamDelta }
-private struct OpenAIStreamDelta: Decodable { let content: String? }
 private struct OllamaChatResponse: Decodable { let message: OpenAIChatMessage }
 private struct OpenAIChatMessage: Codable {
     let role: ChatMessageRole

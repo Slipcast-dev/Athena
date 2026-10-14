@@ -58,6 +58,7 @@ final class ChatAndConsentTests: XCTestCase {
         vm.selectProfile(nil)
         XCTAssertFalse(vm.canSend)
         XCTAssertTrue(vm.modelID.isEmpty)
+        XCTAssertEqual(vm.selectedProfileName, "Athena")
     }
 
     private func profile(_ name: String = "Первый") -> AIProviderProfile {

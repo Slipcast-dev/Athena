@@ -5,17 +5,14 @@ struct AIChatView: View {
     @StateObject private var viewModel: AIChatViewModel
     @State private var showingModelSettings = false
     @State private var followsLatest = true
-    private let openProviders: () -> Void
 
-    init(container: AppContainer, openProviders: @escaping () -> Void) {
+    init(container: AppContainer) {
         _viewModel = StateObject(wrappedValue: AIChatViewModel(ai: container.services.ai, manager: container.services.aiProfiles))
-        self.openProviders = openProviders
     }
 
     /// Инъекция модели используется для локального UI-тестирования без сети.
-    init(viewModel: AIChatViewModel, openProviders: @escaping () -> Void = {}) {
+    init(viewModel: AIChatViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
-        self.openProviders = openProviders
     }
 
     var body: some View {
@@ -95,7 +92,7 @@ struct AIChatView: View {
         VStack(alignment: .leading, spacing: ChatStyle.gap) {
             Text("Провайдер и модель").font(.headline)
             if viewModel.profiles.isEmpty {
-                Text("Добавьте провайдера, чтобы начать переписку.").foregroundStyle(.secondary)
+                Text("Настройка подключения доступна в разделе «ИИ-провайдеры».").foregroundStyle(.secondary)
             } else {
                 Picker("Провайдер", selection: Binding(get: { viewModel.selectedProfileID }, set: { viewModel.selectProfile($0) })) {
                     ForEach(viewModel.profiles) { Text($0.name).tag(Optional($0.id)) }
@@ -105,10 +102,6 @@ struct AIChatView: View {
                     TextField("Идентификатор модели", text: $viewModel.modelID)
                         .textFieldStyle(.roundedBorder)
                 }
-            }
-            Button("Настроить ИИ-провайдеров", systemImage: "slider.horizontal.3") {
-                showingModelSettings = false
-                openProviders()
             }
         }
         .padding(ChatStyle.pageInset).frame(width: 320)
@@ -128,10 +121,8 @@ struct AIChatView: View {
                 }
                 if viewModel.profiles.isEmpty {
                     VStack(spacing: ChatStyle.smallGap) {
-                        Text("Подключите ИИ-провайдера, чтобы начать чат.")
+                        Text("Подключение настраивается в разделе «ИИ-провайдеры».")
                             .font(.subheadline).foregroundStyle(.secondary)
-                        Button("Подключить провайдера", action: openProviders)
-                            .buttonStyle(.borderedProminent).controlSize(.large)
                     }
                 } else {
                     ViewThatFits(in: .horizontal) {
