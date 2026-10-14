@@ -53,8 +53,8 @@ git push --tags
 ## Предварительный GitHub Release
 
 Опубликован предварительный релиз
-[`v0.1.0-unsigned`](https://github.com/Slipcast-dev/MacAssistant/releases/tag/v0.1.0-unsigned)
-с `MacAssistant-0.1.0-unsigned.pkg`. Он предназначен только для технического
+[`v0.1.1-unsigned`](https://github.com/Slipcast-dev/MacAssistant/releases/tag/v0.1.1-unsigned)
+с `MacAssistant-0.1.1-unsigned.pkg`. Он предназначен только для технического
 тестирования: пакет **не подписан Apple Developer ID** и **не нотарифицирован
 Apple**. macOS может заблокировать его запуск или вывести предупреждение
 Gatekeeper. Устанавливать его следует только в тестовой среде и только при

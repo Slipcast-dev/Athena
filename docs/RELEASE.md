@@ -10,7 +10,7 @@
 `swift test` и `./script/build_and_run.sh --verify`.
 
 `./script/build_and_run.sh --installer` дополнительно создаёт
-`dist/MacAssistant-0.1.0-unsigned.pkg`. Он устанавливает `MacAssistant.app` в
+`dist/MacAssistant-0.1.1-unsigned.pkg`. Он устанавливает `MacAssistant.app` в
 `/Applications` и содержит MCP-исполнитель внутри bundle. Пакет unsigned и
 предназначен только для локальной проверки до появления сертификата Developer ID.
 
@@ -36,8 +36,7 @@ Ad-hoc подпись в сценарии предназначена тольк�
 
 ## Готовность к GitHub
 
-Исходники, тесты, CI, шаблон сообщения об ошибке и инструкция первого push уже
-находятся в репозитории. Для публикации исходного кода достаточно создать
-пустой GitHub-репозиторий и выполнить шаги из
-[GITHUB_PUBLICATION.md](GITHUB_PUBLICATION.md). Не прикрепляйте unsigned `.pkg`
-к публичному GitHub Release.
+Исходники опубликованы в `Slipcast-dev/MacAssistant`. По решению владельца
+unsigned `.pkg` публикуется только как предварительный релиз с явной пометкой
+об отсутствии Developer ID и notarization. Подробности:
+[GITHUB_PUBLICATION.md](GITHUB_PUBLICATION.md).

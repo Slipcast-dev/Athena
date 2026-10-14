@@ -1,6 +1,6 @@
 // swift-tools-version: 5.9
 // Минимальная конфигурация Swift Package: она делает архитектурное ядро
-// воспроизводимо собираемым и тестируемым без сторонних зависимостей.
+// воспроизводимо собираемым и тестируемым; Yams разбирает YAML без эвристик строк.
 import PackageDescription
 
 let package = Package(
@@ -15,8 +15,9 @@ let package = Package(
         // графическое приложение не должно делить с внешним агентом свой UI-процесс.
         .executable(name: "MacAssistantMCP", targets: ["MacAssistantMCP"])
     ],
+    dependencies: [.package(url: "https://github.com/jpsim/Yams.git", exact: "6.2.2")],
     targets: [
-        .target(name: "MacAssistantCore"),
+        .target(name: "MacAssistantCore", dependencies: [.product(name: "Yams", package: "Yams")]),
         .executableTarget(
             name: "MacAssistant",
             dependencies: ["MacAssistantCore"],
@@ -30,7 +31,7 @@ let package = Package(
         ),
         .testTarget(
             name: "MacAssistantCoreTests",
-            dependencies: ["MacAssistantCore"]
+            dependencies: ["MacAssistantCore", "MacAssistant"]
         )
     ]
 )

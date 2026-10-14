@@ -53,31 +53,40 @@ struct DiagnosticsView: View {
 
 private struct DiagnosticAIConsentView: View {
     @Environment(\.dismiss) private var dismiss
-    let report: DiagnosticReport
-    let ai: any AIProviding
-    let profiles: any AIProfileManaging
-    @State private var consent = false
-    @State private var profile: AIProviderProfile?
-    @State private var modelID = ""
-    @State private var result = ""
+    @StateObject private var viewModel: DiagnosticAIConsentViewModel
+
+    init(report: DiagnosticReport, ai: any AIProviding, profiles: any AIProfileManaging) {
+        _viewModel = StateObject(wrappedValue: DiagnosticAIConsentViewModel(report: report, ai: ai, manager: profiles))
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Предварительный просмотр для ИИ").font(.title2)
             Text("Будет передан только показанный ниже обезличенный текст. API-ключи, серийные номера и пути файлов исключены.").foregroundStyle(.secondary)
-            TextEditor(text: .constant(DiagnosticReportRedactor.text(for: report))).font(.body.monospaced()).frame(minHeight: 220)
-            Toggle("Я подтверждаю передачу этого отчёта выбранному провайдеру", isOn: $consent)
-            TextField("Model ID", text: $modelID)
-            if !result.isEmpty { Text(result).textSelection(.enabled) }
-            HStack { Spacer(); Button("Отмена") { dismiss() }; Button("Отправить") { send() }.disabled(!consent || profile == nil || modelID.isEmpty) }
+            Picker("Получатель отчёта", selection: $viewModel.selectedProfileID) {
+                Text("Выберите провайдера").tag(Optional<UUID>.none)
+                ForEach(viewModel.profiles) { profile in
+                    Text(profile.name).tag(Optional(profile.id))
+                }
+            }.disabled(viewModel.isSending)
+            if let recipient = viewModel.selectedProfile {
+                Text("Получатель: \(recipient.name)")
+                Text("API: \(recipient.baseURL.absoluteString)").textSelection(.enabled).font(.caption)
+            }
+            TextEditor(text: .constant(viewModel.preview)).font(.body.monospaced()).frame(minHeight: 220)
+            Toggle("Я подтверждаю передачу этого отчёта выбранному провайдеру", isOn: $viewModel.consent)
+                .disabled(viewModel.isSending || viewModel.selectedProfile == nil)
+            TextField("Model ID", text: $viewModel.modelID).disabled(viewModel.isSending)
+            if viewModel.isSending { ProgressView("Отправка отчёта…") }
+            if !viewModel.result.isEmpty { Text(viewModel.result).textSelection(.enabled) }
+            HStack {
+                Spacer()
+                Button("Закрыть") { dismiss() }.disabled(viewModel.isSending)
+                Button("Отправить") { Task { await viewModel.send() } }.disabled(!viewModel.canSend)
+            }
         }
         .padding().frame(width: 620)
-        .task { profile = await profiles.profiles().first; modelID = profile?.defaultModelID ?? "" }
-    }
-
-    private func send() {
-        guard let profile else { return }
-        Task { do { let reply = try await ai.send(messages: [ChatMessage(role: .system, content: "Проанализируй только предоставленный диагностический отчёт на русском языке."), ChatMessage(role: .user, content: DiagnosticReportRedactor.text(for: report))], using: profile, modelID: modelID); result = reply.content } catch { result = error.localizedDescription } }
+        .task { await viewModel.load() }
     }
 }
 
