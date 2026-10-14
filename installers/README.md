@@ -1,11 +1,11 @@
 # Тестовые установщики Athena
 
 Актуальная сборка:
-[Athena-0.1.3-unsigned.pkg](Athena-0.1.3-unsigned.pkg).
+[Athena-0.1.4-unsigned.pkg](Athena-0.1.4-unsigned.pkg).
 Содержит исправления аудита, обновлённую иконку и имя Athena; подключение
 провайдера оставлено только в отдельном разделе.
-[Повторный аудит](../docs/AUDIT_0.1.3.md).
-Версия 0.1.3 опубликована в GitHub Releases. В текущем дереве хранится только
+[Аудит публичного имени](../docs/AUDIT_0.1.4.md).
+Версия 0.1.4 опубликована в GitHub Releases. В текущем дереве хранится только
 актуальный пакет. Старые опубликованные версии доступны в
 [истории релизов](https://github.com/Slipcast-dev/Athena/releases), а ранее
 зафиксированные файлы — в истории Git.
@@ -19,7 +19,7 @@ Gatekeeper может блокировать установку. Он опубл
 Проверка из этой папки: `shasum -a 256 -c SHA256SUMS.txt`.
 
 Идентичный файл доступен в
-[GitHub Release v0.1.3-unsigned](https://github.com/Slipcast-dev/Athena/releases/tag/v0.1.3-unsigned).
+[GitHub Release v0.1.4-unsigned](https://github.com/Slipcast-dev/Athena/releases/tag/v0.1.4-unsigned).
 Установка требует подтверждения macOS и помещает приложение в `/Applications`.
 
 В текущей среде упаковки macOS добавляет служебные AppleDouble-записи `._*`.

@@ -14,7 +14,7 @@
   <img src="https://img.shields.io/badge/MCP-local%20only-6D28D9?style=for-the-badge" alt="Локальный MCP">
 </p>
 
-Athena (ранее Mac Assistant) — нативный локальный помощник для macOS 14+ на SwiftUI. Он показывает состояние
+Athena — нативный локальный помощник для macOS 14+ на SwiftUI. Он показывает состояние
 Mac, формирует локальный диагностический отчёт, безопасно анализирует выбранный
 каталог и подключает ИИ-провайдеров только по явной настройке пользователя.
 
@@ -88,22 +88,22 @@ Developer ID Application, hardened runtime и notarization Apple.
 ./script/build_and_run.sh --installer
 ```
 
-Он создаст `dist/Athena-0.1.3-unsigned.pkg`. Установщик намеренно не
+Он создаст `dist/Athena-0.1.4-unsigned.pkg`. Установщик намеренно не
 запускается автоматически: установка в `/Applications` должна быть подтверждена
 пользователем macOS.
 
 Тестовый установщик доступен в
-[GitHub Release Athena v0.1.3-unsigned](https://github.com/Slipcast-dev/Athena/releases/tag/v0.1.3-unsigned).
+[GitHub Release Athena v0.1.4-unsigned](https://github.com/Slipcast-dev/Athena/releases/tag/v0.1.4-unsigned).
 Он не подписан Apple Developer ID и не нотарифицирован Apple.
 Копия пакета и SHA-256 также находятся в [installers](installers/README.md).
-Исходники и установщик Athena 0.1.3 опубликованы в
+Исходники и установщик Athena 0.1.4 опубликованы в
 [Slipcast-dev/Athena](https://github.com/Slipcast-dev/Athena).
 [Повторный аудит](docs/AUDIT_0.1.3.md) подтверждает исправление трёх замечаний 0.1.2.
 Подключение ИИ-провайдеров выполняется только в отдельном разделе «ИИ-провайдеры».
 
 Bundle ID, Keychain service, имя MCP `mac-assistant` и технические SwiftPM-
 модули сохранены для совместимости. После установки под новым именем старую
-MCP-регистрацию с путём `MacAssistant.app` нужно отключить и подключить заново
+MCP-регистрацию с путём к предыдущей сборке нужно отключить и подключить заново
 из раздела «Агенты», затем перезапустить клиент.
 
 ## Codex, DeepSeek Harness и MCP
@@ -157,6 +157,7 @@ Harness после подключения. Дополнительные кома
 swift test
 swift build
 python3 script/check_links.py
+python3 script/check_branding.py
 ```
 
 Состояние этапов разработки — в [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md),

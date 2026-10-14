@@ -10,7 +10,7 @@
 `swift test` и `./script/build_and_run.sh --verify`.
 
 `./script/build_and_run.sh --installer` дополнительно создаёт
-`dist/Athena-0.1.3-unsigned.pkg`. Он устанавливает `Athena.app` в
+`dist/Athena-0.1.4-unsigned.pkg`. Он устанавливает `Athena.app` в
 `/Applications` и содержит MCP-исполнитель внутри bundle. Пакет unsigned и
 предназначен только для локальной проверки до появления сертификата Developer ID.
 
@@ -36,12 +36,12 @@ Ad-hoc подпись в сценарии предназначена тольк�
 
 ## Готовность к GitHub
 
-Исходники опубликованы в `Slipcast-dev/MacAssistant`. По решению владельца
+Исходники опубликованы в `Slipcast-dev/Athena`. По решению владельца
 unsigned `.pkg` публикуется только как предварительный релиз с явной пометкой
 об отсутствии Developer ID и notarization. Подробности:
 [GITHUB_PUBLICATION.md](GITHUB_PUBLICATION.md).
 
-Версия 0.1.3 опубликована в
-[GitHub Releases](https://github.com/Slipcast-dev/Athena/releases/tag/v0.1.3-unsigned).
+Версия 0.1.4 опубликована в
+[GitHub Releases](https://github.com/Slipcast-dev/Athena/releases/tag/v0.1.4-unsigned).
 Установщик и SHA-256 находятся в `installers/`, заметки релиза —
-`docs/RELEASE_NOTES_0.1.3.md`.
+`docs/RELEASE_NOTES_0.1.4.md`.

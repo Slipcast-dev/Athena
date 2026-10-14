@@ -7,6 +7,6 @@ public enum DiagnosticReportRedactor {
         let cpu = report.metrics.cpuUsagePercent.map { String(format: "%.1f%%", $0) } ?? "нет данных"
         let storage = report.metrics.storageUsagePercent.map { String(format: "%.1f%%", $0) } ?? "нет данных"
         let findings = report.findings.map { "- [\($0.severity.rawValue)] \($0.title): \($0.recommendation)" }.joined(separator: "\n")
-        return "Диагностический отчёт Mac Assistant\nmacOS: \(report.operatingSystemVersion)\nCPU: \(cpu)\nНакопитель: \(storage)\nПредупреждения:\n\(findings)"
+        return "Диагностический отчёт Athena\nmacOS: \(report.operatingSystemVersion)\nCPU: \(cpu)\nНакопитель: \(storage)\nПредупреждения:\n\(findings)"
     }
 }

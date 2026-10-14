@@ -20,6 +20,8 @@ jobs:
         run: swift test
       - name: Проверить локальные ссылки документации
         run: python3 script/check_links.py
+      - name: Проверить публичное имя Athena
+        run: python3 script/check_branding.py
       - name: Проверить release-сборку
         run: swift build -c release
       - name: Проверить отсутствие секретов в исходниках

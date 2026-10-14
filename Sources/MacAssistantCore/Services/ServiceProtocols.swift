@@ -43,7 +43,7 @@ public protocol AgentBridging: Sendable {
 public protocol MCPConnectionManaging: Sendable {
     func status(for client: MCPClient) async -> MCPConnectionStatus
     func connect(_ client: MCPClient) async throws -> MCPConnectionStatus
-    /// Удаляет только запись Mac Assistant из конфигурации выбранного клиента.
+    /// Удаляет только запись Athena из конфигурации выбранного клиента.
     /// Другие MCP-серверы и настройки пользователя остаются без изменений.
     func disconnect(_ client: MCPClient) async throws -> MCPConnectionStatus
 }

@@ -1,7 +1,7 @@
 import Foundation
 import Yams
 
-/// Настраивает только собственный локальный MCP-исполнитель Mac Assistant.
+/// Настраивает только собственный локальный MCP-исполнитель Athena.
 /// Сервис не принимает команду, путь или YAML от агента: все значения определены
 /// приложением, а запись Harness ограничена стабильным `id`.
 public actor MCPConnectionService: MCPConnectionManaging {
@@ -110,7 +110,7 @@ public actor MCPConnectionService: MCPConnectionManaging {
         document.removeAssistant()
 
         if document.operations.isEmpty {
-            // Файл был создан только для Mac Assistant, поэтому его безопасно
+            // Файл был создан только для Athena, поэтому его безопасно
             // убрать целиком. Это возвращает Harness в исходное состояние.
             try fileManager.removeItem(at: patchURL)
         } else {
