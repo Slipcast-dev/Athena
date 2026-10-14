@@ -1,4 +1,12 @@
-# Тестовый установщик Mac Assistant 0.1.1
+# Тестовые установщики Mac Assistant
+
+Новая сборка, подготовленная локально:
+[MacAssistant-0.1.2-unsigned.pkg](MacAssistant-0.1.2-unsigned.pkg).
+Содержит обновлённый интерфейс чата; подробности —
+[дизайн](../docs/CHAT_DESIGN.md) и [аудит](../docs/AUDIT_0.1.2.md).
+Версия 0.1.2 ещё не опубликована в GitHub Releases.
+
+Ранее опубликованный установщик:
 
 [Скачать MacAssistant-0.1.1-unsigned.pkg](MacAssistant-0.1.1-unsigned.pkg)
 

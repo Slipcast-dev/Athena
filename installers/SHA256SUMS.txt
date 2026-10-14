@@ -1,1 +1,2 @@
 a4e8021f1b485ee1d6610d09674295b47115bedef5546063007b1c425f9c6de2  MacAssistant-0.1.1-unsigned.pkg
+bdd27c26da1a121d9cb30af44d902b9a0d1906bb6f8c3cbe8c791b14dfd63e1d  MacAssistant-0.1.2-unsigned.pkg

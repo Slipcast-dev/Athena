@@ -35,6 +35,31 @@ private actor RecordingAI: AIProviding {
 
 @MainActor
 final class ChatAndConsentTests: XCTestCase {
+    func testComposerReadinessAndProfileSelectionUseDefaultModel() async {
+        var first = profile("Первый API")
+        first.defaultModelID = "first-model"
+        var second = profile("Второй API")
+        second.defaultModelID = "second-model"
+        let suite = "ChatVM.\(UUID())"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let vm = AIChatViewModel(ai: RecordingAI(), manager: TestProfiles([first, second]), history: ChatHistoryStore(defaults: defaults))
+        XCTAssertFalse(vm.canSend)
+        await vm.load()
+        vm.input = " \n "
+        XCTAssertFalse(vm.canSend)
+        vm.input = "Вопрос"
+        XCTAssertTrue(vm.canSend)
+        vm.selectProfile(second.id)
+        XCTAssertEqual(vm.modelID, "second-model")
+        XCTAssertEqual(vm.selectedProfileName, "Второй API")
+        vm.modelID = "  "
+        XCTAssertFalse(vm.canSend)
+        vm.selectProfile(nil)
+        XCTAssertFalse(vm.canSend)
+        XCTAssertTrue(vm.modelID.isEmpty)
+    }
+
     private func profile(_ name: String = "Первый") -> AIProviderProfile {
         AIProviderProfile(name: name, kind: .openAICompatible, baseURL: URL(string: "https://example.com/v1")!, defaultModelID: "test-model")
     }

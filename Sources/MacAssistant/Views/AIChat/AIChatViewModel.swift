@@ -27,6 +27,20 @@ final class AIChatViewModel: ObservableObject {
     }
 
     var canRetry: Bool { retryContext != nil && !isGenerating }
+    var selectedProfileName: String { selectedProfile?.name ?? "Mac Assistant" }
+    var canSend: Bool {
+        isLoaded && !isGenerating && selectedProfile != nil
+            && !modelID.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            && !input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    /// При выборе другого провайдера модель меняется на его defaultModelID,
+    /// чтобы случайно не отправить идентификатор от предыдущего API.
+    func selectProfile(_ id: UUID?) {
+        guard !isGenerating else { return }
+        selectedProfileID = id
+        modelID = selectedProfile?.defaultModelID ?? ""
+    }
 
     func load() async {
         profiles = await manager.profiles()
@@ -60,8 +74,7 @@ final class AIChatViewModel: ObservableObject {
     }
 
     func send() {
-        guard isLoaded, !isGenerating, selectedProfile != nil, !modelID.isEmpty,
-              !input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        guard canSend else { return }
         conversation.messages.append(ChatMessage(role: .user, content: input))
         input = ""
         retryContext = conversation.messages
