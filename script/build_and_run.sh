@@ -9,11 +9,15 @@ APP_NAME="Athena"
 PRODUCT_NAME="MacAssistant"
 BUNDLE_ID="com.macassistant.app"
 MIN_SYSTEM_VERSION="14.0"
-APP_VERSION="0.1.4"
+APP_VERSION="0.1.5"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DIST_DIR="$ROOT_DIR/dist"
-APP_BUNDLE="$DIST_DIR/$APP_NAME.app"
+# Finder не должен наблюдать пустой/недособранный .app: иначе он запоминает
+# стандартную иконку до перезапуска. Публикуем только полностью готовый bundle.
+STAGING_PARENT="$(mktemp -d)"
+APP_BUNDLE="$STAGING_PARENT/$APP_NAME.app"
+trap 'rm -rf "$STAGING_PARENT"' EXIT
 APP_CONTENTS="$APP_BUNDLE/Contents"
 APP_MACOS="$APP_CONTENTS/MacOS"
 APP_BINARY="$APP_MACOS/$PRODUCT_NAME"
@@ -40,7 +44,6 @@ BUILD_BINARY="$(swift build -c "$BUILD_CONFIGURATION" --show-bin-path)/$PRODUCT_
 BUILD_MCP_BINARY="$(swift build -c "$BUILD_CONFIGURATION" --show-bin-path)/MacAssistantMCP"
 BUILD_PRODUCTS_DIR="$(dirname "$BUILD_BINARY")"
 
-rm -rf "$APP_BUNDLE"
 mkdir -p "$APP_MACOS"
 mkdir -p "$APP_CONTENTS/Resources"
 cp "$ROOT_DIR/LICENSE" "$APP_CONTENTS/Resources/LICENSE.txt"
@@ -70,7 +73,7 @@ fi
 ICONSET_PARENT="$(mktemp -d)"
 ICONSET_DIR="$ICONSET_PARENT/$APP_NAME.iconset"
 mkdir -p "$ICONSET_DIR"
-trap 'rm -rf "$ICONSET_PARENT"' EXIT
+trap 'rm -rf "$ICONSET_PARENT" "$STAGING_PARENT"' EXIT
 for size in 16 32 128 256 512; do
   /usr/bin/sips -z "$size" "$size" "$ICON_SOURCE" --out "$ICONSET_DIR/icon_${size}x${size}.png" >/dev/null
   retina_size=$((size * 2))
@@ -95,10 +98,10 @@ cat >"$INFO_PLIST" <<PLIST
   <string>$APP_VERSION</string>
   <key>CFBundleVersion</key>
   <string>$APP_VERSION</string>
+  <!-- ICNS используется напрямую: CFBundleIconName требует Asset Catalog,
+       которого в SwiftPM bundle нет. -->
   <key>CFBundleIconFile</key>
   <string>$APP_NAME.icns</string>
-  <key>CFBundleIconName</key>
-  <string>$APP_NAME</string>
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>LSMinimumSystemVersion</key>
@@ -113,12 +116,38 @@ PLIST
 # Developer ID Application и не делает приложение пригодным для распространения.
 /usr/bin/codesign --force --sign - "$APP_BUNDLE"
 
+/usr/bin/plutil -lint "$INFO_PLIST"
+/usr/bin/codesign --verify --deep --strict "$APP_BUNDLE"
+swift "$ROOT_DIR/script/verify_app_bundle.swift" "$APP_BUNDLE" "$ICONSET_PARENT/staged-preview.png"
+
+# Предыдущая сборка живёт во временном каталоге до успешной замены. В случае
+# ошибки перемещения восстанавливаем её, не оставляя пользователя без .app.
+mkdir -p "$DIST_DIR"
+FINAL_APP_BUNDLE="$DIST_DIR/$APP_NAME.app"
+if [[ -e "$FINAL_APP_BUNDLE" ]]; then
+  mv "$FINAL_APP_BUNDLE" "$STAGING_PARENT/previous.app"
+fi
+if ! mv "$APP_BUNDLE" "$FINAL_APP_BUNDLE"; then
+  if [[ -d "$STAGING_PARENT/previous.app" ]]; then
+    mv "$STAGING_PARENT/previous.app" "$FINAL_APP_BUNDLE"
+  fi
+  exit 1
+fi
+APP_BUNDLE="$FINAL_APP_BUNDLE"
+APP_CONTENTS="$APP_BUNDLE/Contents"
+APP_BINARY="$APP_CONTENTS/MacOS/$PRODUCT_NAME"
+INFO_PLIST="$APP_CONTENTS/Info.plist"
+
 # Finder кэширует имя и иконку при повторном создании .app с тем же bundle ID.
 # Обновляем только запись готового приложения, не очищая общий кэш системы.
 LSREGISTER="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
 if [[ -x "$LSREGISTER" ]]; then
   "$LSREGISTER" -f "$APP_BUNDLE" || echo "Не удалось обновить локальную запись Athena в LaunchServices." >&2
 fi
+
+# Ошибка alpha в любом размере ICNS должна остановить выпуск установщика,
+# а не обнаруживаться пользователем уже после установки приложения.
+swift "$ROOT_DIR/script/verify_app_bundle.swift" "$APP_BUNDLE" "$ICONSET_PARENT/finder-preview.png"
 
 open_app() { /usr/bin/open -n "$APP_BUNDLE"; }
 
@@ -127,7 +156,7 @@ make_installer() {
   # установить себя: запись в /Applications требует отдельного решения пользователя.
   PAYLOAD_PARENT="$(mktemp -d)"
   PAYLOAD_ROOT="$PAYLOAD_PARENT/root"
-  trap 'rm -rf "$ICONSET_PARENT" "$PAYLOAD_PARENT"' EXIT
+  trap 'rm -rf "$ICONSET_PARENT" "$PAYLOAD_PARENT" "$STAGING_PARENT"' EXIT
   mkdir -p "$PAYLOAD_ROOT/Applications"
   # Не переносим resource forks и расширенные атрибуты в payload. Иначе APFS
   # может создать `._`-файлы, которые бесполезны для приложения и засоряют PKG.

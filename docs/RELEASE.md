@@ -10,7 +10,7 @@
 `swift test` и `./script/build_and_run.sh --verify`.
 
 `./script/build_and_run.sh --installer` дополнительно создаёт
-`dist/Athena-0.1.4-unsigned.pkg`. Он устанавливает `Athena.app` в
+`dist/Athena-0.1.5-unsigned.pkg`. Он устанавливает `Athena.app` в
 `/Applications` и содержит MCP-исполнитель внутри bundle. Пакет unsigned и
 предназначен только для локальной проверки до появления сертификата Developer ID.
 
@@ -41,7 +41,10 @@ unsigned `.pkg` публикуется только как предварите�
 об отсутствии Developer ID и notarization. Подробности:
 [GITHUB_PUBLICATION.md](GITHUB_PUBLICATION.md).
 
-Версия 0.1.4 опубликована в
-[GitHub Releases](https://github.com/Slipcast-dev/Athena/releases/tag/v0.1.4-unsigned).
+Версия 0.1.5 опубликована в
+[GitHub Releases](https://github.com/Slipcast-dev/Athena/releases/tag/v0.1.5-unsigned).
 Установщик и SHA-256 находятся в `installers/`, заметки релиза —
-`docs/RELEASE_NOTES_0.1.4.md`.
+`docs/RELEASE_NOTES_0.1.5.md`.
+
+Упаковка проверяет прозрачность внешних углов каждого растрового размера ICNS.
+Исходный PNG также защищён регрессионным XCTest от возвращения тёмного квадрата.

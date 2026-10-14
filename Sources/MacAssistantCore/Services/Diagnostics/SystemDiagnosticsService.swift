@@ -62,7 +62,7 @@ public actor SystemDiagnosticsService: SystemDiagnosing {
     private let applicationVersion: String
     private let thresholds: DiagnosticThresholds
 
-    public init(systemInformation: any SystemInformationProviding, applicationVersion: String = "0.1.4", thresholds: DiagnosticThresholds = .init()) {
+    public init(systemInformation: any SystemInformationProviding, applicationVersion: String = "0.1.5", thresholds: DiagnosticThresholds = .init()) {
         self.systemInformation = systemInformation
         self.applicationVersion = applicationVersion
         self.thresholds = thresholds

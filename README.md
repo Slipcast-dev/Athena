@@ -88,18 +88,20 @@ Developer ID Application, hardened runtime и notarization Apple.
 ./script/build_and_run.sh --installer
 ```
 
-Он создаст `dist/Athena-0.1.4-unsigned.pkg`. Установщик намеренно не
+Он создаст `dist/Athena-0.1.5-unsigned.pkg`. Установщик намеренно не
 запускается автоматически: установка в `/Applications` должна быть подтверждена
 пользователем macOS.
 
 Тестовый установщик доступен в
-[GitHub Release Athena v0.1.4-unsigned](https://github.com/Slipcast-dev/Athena/releases/tag/v0.1.4-unsigned).
+[GitHub Release Athena v0.1.5-unsigned](https://github.com/Slipcast-dev/Athena/releases/tag/v0.1.5-unsigned).
 Он не подписан Apple Developer ID и не нотарифицирован Apple.
 Копия пакета и SHA-256 также находятся в [installers](installers/README.md).
-Исходники и установщик Athena 0.1.4 опубликованы в
+Исходники и установщик Athena 0.1.5 опубликованы в
 [Slipcast-dev/Athena](https://github.com/Slipcast-dev/Athena).
 [Повторный аудит](docs/AUDIT_0.1.3.md) подтверждает исправление трёх замечаний 0.1.2.
 Подключение ИИ-провайдеров выполняется только в отдельном разделе «ИИ-провайдеры».
+В версии 0.1.5 удалён внешний тёмный квадрат иконки; прозрачность PNG и ICNS
+проверяется автоматически. [Аудит исправления](docs/AUDIT_0.1.5.md).
 
 Bundle ID, Keychain service, имя MCP `mac-assistant` и технические SwiftPM-
 модули сохранены для совместимости. После установки под новым именем старую
